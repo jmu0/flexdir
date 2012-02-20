@@ -22,6 +22,7 @@ pthread_cond_t condition = PTHREAD_COND_INITIALIZER;
 
 int main()
 {
+//DIT IS EEN TEST
     s = w.getSettings();
     s->verbose = true;   
     startThreads();
