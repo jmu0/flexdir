@@ -15,9 +15,9 @@ EVENT_BUF_LEN	watcher.cpp	12;"	d	file:
 EVENT_SIZE	watcher.cpp	11;"	d	file:
 FLEXFILE	worker.h	/^enum role_t { NONE, FLEXFILE, NEW, PRIMARY, SECONDARY, ORPHAN, COPIES };$/;"	e	enum:role_t
 ID	worker.h	/^    taskID_t ID;$/;"	m	struct:task_t
-MAX_LOAD_AVG	worker.cpp	20;"	d	file:
-MAX_LOAD_SLEEP	worker.cpp	21;"	d	file:
-MAX_WORKER_THREADS	worker.cpp	22;"	d	file:
+MAX_LOAD_AVG	worker.cpp	19;"	d	file:
+MAX_LOAD_SLEEP	worker.cpp	20;"	d	file:
+MAX_WORKER_THREADS	worker.cpp	21;"	d	file:
 NEW	worker.h	/^enum role_t { NONE, FLEXFILE, NEW, PRIMARY, SECONDARY, ORPHAN, COPIES };$/;"	e	enum:role_t
 NONE	worker.h	/^enum role_t { NONE, FLEXFILE, NEW, PRIMARY, SECONDARY, ORPHAN, COPIES };$/;"	e	enum:role_t
 ORPHAN	worker.h	/^enum role_t { NONE, FLEXFILE, NEW, PRIMARY, SECONDARY, ORPHAN, COPIES };$/;"	e	enum:role_t
@@ -27,8 +27,7 @@ RENAME	worker.h	/^enum taskID_t { ADD, SYNC, DELETE, REMOVE, RENAME };$/;"	e	enu
 SECONDARY	worker.h	/^enum role_t { NONE, FLEXFILE, NEW, PRIMARY, SECONDARY, ORPHAN, COPIES };$/;"	e	enum:role_t
 SETTINGS	worker.cpp	17;"	d	file:
 SYNC	worker.h	/^enum taskID_t { ADD, SYNC, DELETE, REMOVE, RENAME };$/;"	e	enum:taskID_t
-TASK_CUE	worker.cpp	19;"	d	file:
-VERBOSE	worker.cpp	23;"	d	file:
+VERBOSE	worker.cpp	22;"	d	file:
 WATCHER_H	watcher.h	2;"	d
 WORKER_H	worker.h	2;"	d
 Watcher	watcher.cpp	/^Watcher::Watcher(Worker * w)$/;"	f	class:Watcher
@@ -42,11 +41,11 @@ actionCreatedir	worker.cpp	/^int Worker::actionCreatedir(char * path)$/;"	f	clas
 actionDeleteFile	worker.cpp	/^int Worker::actionDeleteFile(char * path)$/;"	f	class:Worker
 actionMoveFile	worker.cpp	/^int Worker::actionMoveFile(char * from, char * to)$/;"	f	class:Worker
 actionSyncFile	worker.cpp	/^int Worker::actionSyncFile(char * from, char * to)$/;"	f	class:Worker
+actualCopies	worker.h	/^    int actualCopies;$/;"	m	struct:flexfile_t
 addTask	worker.cpp	/^    int Worker::addTask(taskID_t ID, string from, string to)$/;"	f	class:Worker
 checkerThread	main.cpp	/^void * checkerThread(void * id)$/;"	f
 condition	testWorker.cpp	/^pthread_cond_t condition = PTHREAD_COND_INITIALIZER;$/;"	v
 copies	worker.h	/^    int copies;$/;"	m	struct:flexdir_t
-copies	worker.h	/^    int copies;$/;"	m	struct:flexfile_t
 doTask	worker.cpp	/^    int Worker::doTask(task_t * task)$/;"	f	class:Worker
 fileTest	testWorker.cpp	/^void fileTest()$/;"	f
 files	worker.h	/^    vector<flexfile_t> files;$/;"	m	struct:flexdir_t
@@ -57,13 +56,14 @@ flexfile_t	worker.h	/^struct flexfile_t$/;"	s
 freeMB	worker.h	/^    long freeMB;$/;"	m	struct:pooldir_t
 from	worker.h	/^    string from;$/;"	m	struct:task_t
 getFileExists	worker.cpp	/^bool Worker::getFileExists(const char * path)$/;"	f	class:Worker
+getFlexStructFromPath	worker.cpp	/^int Worker::getFlexStructFromPath(flexdir_t * flexdir, flexfile_t * flexfile, string path)$/;"	f	class:Worker
 getIsLink	worker.cpp	/^bool Worker::getIsLink(char * path)$/;"	f	class:Worker
 getLinkTarget	worker.cpp	/^string Worker::getLinkTarget(char * path)$/;"	f	class:Worker
 getLoadAverage	worker.cpp	/^double Worker::getLoadAverage()$/;"	f	class:Worker
 getNdirs	worker.cpp	/^vector<pooldir_t> Worker::getNdirs(int n)$/;"	f	class:Worker
 getPoolSizes	worker.cpp	/^void Worker::getPoolSizes()$/;"	f	class:Worker
+getPoolStructFromPath	worker.cpp	/^int Worker::getPoolStructFromPath(pooldir_t * pooldir, poolfile_t * poolfile, string path)$/;"	f	class:Worker
 getSettings	worker.cpp	/^settings_t * Worker::getSettings()$/;"	f	class:Worker
-getStructFromPath	worker.cpp	/^void Worker::getStructFromPath(flexdir_t * flexdir, flexfile_t * flexfile, string path)$/;"	f	class:Worker
 getTime	worker.cpp	/^string Worker::getTime(const char * format)$/;"	f	class:Worker
 linktst	testWorker.cpp	/^void linktst(string testlink)$/;"	f
 loadFileStructure	worker.cpp	/^void Worker::loadFileStructure()$/;"	f	class:Worker
@@ -107,6 +107,7 @@ symlinkTest	testWorker.cpp	/^void symlinkTest(){$/;"	f
 taskID_t	worker.h	/^enum taskID_t { ADD, SYNC, DELETE, REMOVE, RENAME };$/;"	g
 task_t	worker.h	/^struct task_t$/;"	s
 tasks	worker.h	/^    queue<task_t> tasks;$/;"	m	struct:settings_t
+testFunctions	testWorker.cpp	/^void testFunctions()$/;"	f
 testTasks	testWorker.cpp	/^void testTasks()$/;"	f
 to	worker.h	/^    string to;$/;"	m	struct:task_t
 usedPerc	worker.h	/^    double usedPerc;$/;"	m	struct:pooldir_t

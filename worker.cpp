@@ -14,9 +14,8 @@
 #include <algorithm> //sort vectors
 #include <pthread.h> //posix threads
 
-#define SETTINGS "/home/jos/cpp-projects/blackhole/blackhole.conf"
-#define DEF_LOGFILE "/home/jos/cpp-projects/blackhole/blackhole.log"
-#define TASK_CUE "/home/jos/cpp-projects/blackhole/blackhole.cue"
+#define SETTINGS "/home/jos/git/flexdir/flexdir.conf"
+#define DEF_LOGFILE "/home/jos/git/flexdir/flexdir.log"
 #define MAX_LOAD_AVG 1
 #define MAX_LOAD_SLEEP 5
 #define MAX_WORKER_THREADS 5
@@ -266,7 +265,7 @@ void Worker::loadFileStructure()
                     f.name = entry->d_name;
                     f.x_path = ix->path;
                     f.role = NONE;
-                    f.copies = 0;
+                    f.actualCopies = 0;
                     ix->files.push_back(f);
                 }
             }
@@ -556,7 +555,14 @@ void Worker::startWorker(pthread_mutex_t * mutex, pthread_cond_t * condition)
 
     int Worker::doTask(task_t * task)
     {
-        string logEntry;
+        flexdir_t fd;
+        flexfile_t ff;
+        pooldir_t pd;
+        poolfile_t pf;
+        vector<pooldir_t>::iterator pit;
+        vector<pooldir_t> dirs; 
+        string path, logEntry;
+        bool copyError = false;
         stringstream ss, sn;
         sn << (settings.tasks.size() + 1);
         ss << task->ID;
@@ -565,12 +571,67 @@ void Worker::startWorker(pthread_mutex_t * mutex, pthread_cond_t * condition)
         {
             case ADD:
                 logEntry += "ADD task: ";
+                //get flexdir/file structures from path <from>
+                if (getFlexStructFromPath(&fd, &ff, task->from) == 0)
+                {
+                    //get n poolfolders
+                    dirs = getNdirs(fd.copies);
+                    if (dirs.size() > 0)
+                    {
+                        //create destination dirs and rsync file to folders
+                        for (pit = dirs.begin(); pit != dirs.end(); pit++)
+                        {
+                            string toPath = pit->path + fd.path;
+                            string to = toPath + "/" + ff.name;
+                            if ( actionCreatedir((char*)toPath.c_str()) == 0)
+                            {
+                                if ( actionSyncFile((char*)task->from.c_str(), (char*)to.c_str()) != 0)
+                                {
+                                    copyError = true;
+                                }
+                            }
+                            else
+                            {
+                                copyError = true;
+                            }
+                        }
+                        if (copyError == false)
+                        {
+                            //remove file / create link
+                            if (actionDeleteFile((char*)task->from.c_str()) == 0)
+                            {
+                                string target = dirs.begin()->path + fd.path + "/" +ff.name;
+                                if (actionCreateLink((char*)target.c_str(), (char*)task->from.c_str()) == 0)
+                                {
+                                    logEntry += "OK ";
+                                }
+                                else 
+                                {
+                                    logEntry += "FAILED could not create symlink ";
+                                }
+                            }
+                        }
+                        else
+                        {
+                            logEntry += "FAILED error copying file(s) to poolfolder(s) ";
+                        }
+                    }
+                    else
+                    {
+                        logEntry += "FAILED could not get N poolfolders ";
+                    }
+                }
+                else
+                {
+                    logEntry += "FAILED could not get flexfile structure ";
+                }
                 break;
             case SYNC:
+                //sync <from> -> <to>
                 logEntry += "SYNC task: ";
                 if (actionSyncFile((char*)task->from.c_str(), (char*)task->to.c_str()) != 0)
                 {
-                    logEntry += "FAILED ";
+                    logEntry += "FAILED could not sync file ";
                 }
                 else
                 {
@@ -579,9 +640,10 @@ void Worker::startWorker(pthread_mutex_t * mutex, pthread_cond_t * condition)
                 break;
             case DELETE:
                 logEntry += "DELETE task: ";
+                //delete file <from>
                 if (actionDeleteFile((char*)task->from.c_str()) != 0)
                 {
-                    logEntry += "FAILED ";
+                    logEntry += "FAILED could not delete file ";
                 }
                 else
                 {
@@ -590,8 +652,46 @@ void Worker::startWorker(pthread_mutex_t * mutex, pthread_cond_t * condition)
                 break;
             case REMOVE:
                 logEntry += "REMOVE task: ";
+                //get pooldir/file structures from path <from>
+                if(getPoolStructFromPath(&pd, &pf, task->from) == 0)
+                {
+                    //check for .deleted dir, create if needed
+                    bool pathError = false;
+                    string delPath = pd.path + "/.deleted" + pf.x_path;
+                    if (getFileExists((char*)delPath.c_str()) == false)
+                    {
+                        if(actionCreatedir((char*)delPath.c_str()) != 0)
+                        {
+                            pathError = true;
+                        }
+                    }
+                    if (pathError == false)
+                    {
+                        //move file to .deleted dir in pooldir root
+                        delPath += "/" + pf.name;
+                        if (actionMoveFile((char*)task->from.c_str(), (char*)delPath.c_str()) == 0)
+                        {
+                            logEntry += "OK ";
+                        }
+                        else
+                        {
+                            logEntry += "FAILED could not move file ";
+                        }
+                    }
+                    else
+                    {
+                        logEntry += "FAILED could not create .deleted ";
+                    }
+                }
+                else
+                {
+                    logEntry += "FAILED could not get pooldir structure ";
+                }
                 break;
             case RENAME:
+                //find all files in pool (link target of <to>)
+                //rename files in pool to <to>
+                //change link target 
                 logEntry += "RENAME task: ";
                 break;
             default:
@@ -599,16 +699,58 @@ void Worker::startWorker(pthread_mutex_t * mutex, pthread_cond_t * condition)
                 break;
         }
         logEntry +=  ", from: " + task->from + ", to:" + task->to;
-    writeLog(logEntry);
-    return 0;
-}
+        writeLog(logEntry);
+        return 0;
+    }
 
-void Worker::getStructFromPath(flexdir_t * flexdir, flexfile_t * flexfile, string path)
+int Worker::getFlexStructFromPath(flexdir_t * flexdir, flexfile_t * flexfile, string path)
 {
-    flexdir = 0;
-    flexfile = 0;
+    vector<flexdir_t>::iterator it;
+    for(it = settings.flexdirs.begin(); it != settings.flexdirs.end(); it++)
+    {
+        string fpath = (*it).path;
+        int len = fpath.length();
+        if (path.substr(0, len) == fpath)
+        {
+            *flexdir = *it;
+            (*flexfile).name = path.substr(len + 1);
+            (*flexfile).x_path = fpath;
+            (*flexfile).role=NONE;
+            (*flexfile).actualCopies = 0;
+            return 0;
+        }
 
+    }
+    return 1;
 }
 
+int Worker::getPoolStructFromPath(pooldir_t * pooldir, poolfile_t * poolfile, string path)
+{
+    vector<flexdir_t>::iterator fit;
+    vector<pooldir_t>::iterator pit;
+    for(pit = settings.pooldirs.begin(); pit != settings.pooldirs.end(); pit++)
+    {
+        string fpath = (*pit).path;
+        int len = fpath.length();
+        if (path.substr(0, len) == fpath)
+        {
+            *pooldir = *pit;
+            (*poolfile).p_path = fpath;
+            string rest = path.substr(len);
+            for(fit = settings.flexdirs.begin(); fit != settings.flexdirs.end(); fit++)
+            {
+                fpath = (*fit).path;
 
-
+                len = fpath.length();
+                if (rest.substr(0, len) == fpath)
+                {
+                    (*poolfile).name = rest.substr(len + 1);
+                    (*poolfile).x_path = fpath;
+                    (*poolfile).role=NONE;
+                    return 0;
+                }
+            }
+        }
+    }
+    return 1;
+}

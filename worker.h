@@ -22,7 +22,7 @@ struct flexfile_t
     string name;
     string x_path;
     role_t role;
-    int copies;
+    int actualCopies;
 };
 
 struct flexdir_t
@@ -74,7 +74,6 @@ class Worker
         bool settingsValidLine(const string &line) const;
         void getPoolSizes();
         void loadFileStructure();
-        void getStructFromPath(flexdir_t * flexdir, flexfile_t * flexfile, string path);
     public:
         Worker();
         ~Worker();
@@ -98,5 +97,7 @@ class Worker
         void startWorker(pthread_mutex_t * mutex, pthread_cond_t * condition);
         int addTask(taskID_t ID, string from, string to);
         int doTask(task_t * task);
+        int getFlexStructFromPath(flexdir_t * flexdir, flexfile_t * flexfile, string path);
+        int getPoolStructFromPath(pooldir_t * pooldir, poolfile_t * poolfile, string path);
 };
 #endif

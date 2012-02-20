@@ -16,6 +16,8 @@ void linktst(string testlink);
 void ndirtest();
 void testTasks();
 void startThreads();
+void testFunctions();
+
 void * wThread(void * id);
 pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 pthread_cond_t condition = PTHREAD_COND_INITIALIZER;
@@ -24,12 +26,13 @@ int main()
 {
     s = w.getSettings();
     s->verbose = true;   
-    startThreads();
     //symlinkTest();
     //fileTest();
     //w.printSettings();    
     //w.printFileStructure();
     //ndirtest();
+    //testFunctions();
+    startThreads();
 }
 
 void startThreads()
@@ -150,12 +153,34 @@ void ndirtest()
     }
 }
 
+void testFunctions()
+{
+    cout << "TEST FUNCTIONS" << endl;
+    flexdir_t fd;
+    flexfile_t ff;
+    Worker wo = w;
+    system("touch /home/jos/tmp/test1.txt");
+    w.getFlexStructFromPath(&fd, &ff, "/home/jos/tmp/test1.txt");
+    cout << "Flex-structure: /home/jos/tmp/test1.txt" << endl;
+    cout << "flexdir path: " <<  fd.path << endl;
+    cout << "flexfile name: " << ff.name << endl;
+    pooldir_t pd;
+    poolfile_t pf;
+    system("touch /home/jos/pool1/home/jos/tmp/test1.txt");
+    w.getPoolStructFromPath(&pd, &pf, "/home/jos/pool1/home/jos/tmp/test1.txt");
+    cout << "Pool-structure: /home/jos/pool1/home/jos/tmp/test1.txt" << endl;
+    cout << "pooldir path: " << pd.path << endl;
+    cout << "poolfile name: " << pf.name << endl;
+    cout << "poolfile p_path: " << pf.p_path << endl;
+    cout << "poolfile x_path: " << pf.x_path << endl;
+}
+
 void testTasks()
 {
     task_t t;
-    for (int j = 0; j<5;j++)
+    for (int j = 0; j<2;j++)
     {
-        for (int i = 0; i<5;i++)
+        for (int i = 0; i<1;i++)
         {
             stringstream ss;
             ss << j << i;
@@ -170,11 +195,10 @@ void testTasks()
             pthread_mutex_unlock(&mutex);
         }
         pthread_cond_signal(&condition);
-        sleep(1);
     }
-    for (int j = 0; j<5;j++)
+    for (int j = 0; j<2;j++)
     {
-        for (int i = 0; i<5;i++)
+        for (int i = 0; i<1;i++)
         {
             stringstream ss;
             ss << j << i;
@@ -197,5 +221,16 @@ void testTasks()
             pthread_mutex_unlock(&mutex);
         }
     }
+    pthread_cond_signal(&condition);
+    system("touch /home/jos/tmp/addTest.txt");
+    cout << "TEST add task" << endl;
+    pthread_mutex_lock(&mutex);
+    w.addTask(ADD, "/home/jos/tmp/addTest.txt", " ");
+    pthread_mutex_unlock(&mutex);
+    pthread_cond_signal(&condition);
+    system("touch /home/jos/pool1/home/jos/tmp/removeTest.txt");
+    pthread_mutex_lock(&mutex);
+    w.addTask(REMOVE, "/home/jos/pool1/home/jos/tmp/removeTest.txt", " ");
+    pthread_mutex_unlock(&mutex);
     pthread_cond_signal(&condition);
 }
