@@ -1,0 +1,128 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.8	//
+ADD	worker.h	/^enum taskID_t { ADD, SYNC, DELETE, REMOVE, RENAME };$/;"	e	enum:taskID_t
+CHECKER_H	checker.h	2;"	d
+COPIES	worker.h	/^enum role_t { NONE, XFILE, NEW, PRIMARY, SECONDARY, ORPHAN, COPIES };$/;"	e	enum:role_t
+Checker	checker.cpp	/^Checker::Checker(Worker * w)$/;"	f	class:Checker
+Checker	checker.h	/^class Checker$/;"	c
+DEF_LOGFILE	worker.cpp	18;"	d	file:
+DELETE	worker.h	/^enum taskID_t { ADD, SYNC, DELETE, REMOVE, RENAME };$/;"	e	enum:taskID_t
+EVENT_BUF_LEN	watcher.cpp	12;"	d	file:
+EVENT_SIZE	watcher.cpp	11;"	d	file:
+ID	worker.h	/^    taskID_t ID;$/;"	m	struct:task_t
+MAX_LOAD_AVG	worker.cpp	19;"	d	file:
+MAX_LOAD_SLEEP	worker.cpp	20;"	d	file:
+MAX_WORKER_THREADS	worker.cpp	21;"	d	file:
+NEW	worker.h	/^enum role_t { NONE, XFILE, NEW, PRIMARY, SECONDARY, ORPHAN, COPIES };$/;"	e	enum:role_t
+NONE	worker.h	/^enum role_t { NONE, XFILE, NEW, PRIMARY, SECONDARY, ORPHAN, COPIES };$/;"	e	enum:role_t
+ORPHAN	worker.h	/^enum role_t { NONE, XFILE, NEW, PRIMARY, SECONDARY, ORPHAN, COPIES };$/;"	e	enum:role_t
+PRIMARY	worker.h	/^enum role_t { NONE, XFILE, NEW, PRIMARY, SECONDARY, ORPHAN, COPIES };$/;"	e	enum:role_t
+REMOVE	worker.h	/^enum taskID_t { ADD, SYNC, DELETE, REMOVE, RENAME };$/;"	e	enum:taskID_t
+RENAME	worker.h	/^enum taskID_t { ADD, SYNC, DELETE, REMOVE, RENAME };$/;"	e	enum:taskID_t
+SECONDARY	worker.h	/^enum role_t { NONE, XFILE, NEW, PRIMARY, SECONDARY, ORPHAN, COPIES };$/;"	e	enum:role_t
+SETTINGS	worker.cpp	17;"	d	file:
+SYNC	worker.h	/^enum taskID_t { ADD, SYNC, DELETE, REMOVE, RENAME };$/;"	e	enum:taskID_t
+VERBOSE	worker.cpp	22;"	d	file:
+WATCHER_H	watcher.h	2;"	d
+WORKER_H	worker.h	2;"	d
+Watcher	watcher.cpp	/^Watcher::Watcher(Worker * w)$/;"	f	class:Watcher
+Watcher	watcher.h	/^class Watcher$/;"	c
+Worker	worker.cpp	/^Worker::Worker()$/;"	f	class:Worker
+Worker	worker.h	/^class Worker$/;"	c
+XFILE	worker.h	/^enum role_t { NONE, XFILE, NEW, PRIMARY, SECONDARY, ORPHAN, COPIES };$/;"	e	enum:role_t
+actionChangeLink	worker.cpp	/^int Worker::actionChangeLink(char * link, char * newTarget)$/;"	f	class:Worker
+actionCopyFile	worker.cpp	/^int Worker::actionCopyFile(char * from, char * to)\/\/TODO: use rsync$/;"	f	class:Worker
+actionCreateFolder	worker.cpp	/^int Worker::actionCreateFolder(char * path)$/;"	f	class:Worker
+actionCreateLink	worker.cpp	/^int Worker::actionCreateLink(char * target, char * linkname)$/;"	f	class:Worker
+actionDeleteFile	worker.cpp	/^int Worker::actionDeleteFile(char * path)$/;"	f	class:Worker
+actionMoveFile	worker.cpp	/^int Worker::actionMoveFile(char * from, char * to)$/;"	f	class:Worker
+actionSyncFile	worker.cpp	/^int Worker::actionSyncFile(char * from, char * to)$/;"	f	class:Worker
+addTask	worker.cpp	/^    int Worker::addTask(taskID_t ID, string from, string to)$/;"	f	class:Worker
+checkerThread	main.cpp	/^void * checkerThread(void * id)$/;"	f
+condition	testWorker.cpp	/^pthread_cond_t condition = PTHREAD_COND_INITIALIZER;$/;"	v
+copies	worker.h	/^    int copies;$/;"	m	struct:xfile_t
+copies	worker.h	/^    int copies;$/;"	m	struct:xfolder_t
+doTask	worker.cpp	/^    int Worker::doTask(task_t * task)$/;"	f	class:Worker
+fileTest	testWorker.cpp	/^void fileTest()$/;"	f
+files	worker.h	/^    vector<poolfile_t> files;$/;"	m	struct:poolfolder_t
+files	worker.h	/^    vector<xfile_t> files;$/;"	m	struct:xfolder_t
+freeMB	worker.h	/^    long freeMB;$/;"	m	struct:poolfolder_t
+from	worker.h	/^    string from;$/;"	m	struct:task_t
+getFileExists	worker.cpp	/^bool Worker::getFileExists(const char * path)$/;"	f	class:Worker
+getIsLink	worker.cpp	/^bool Worker::getIsLink(char * path)$/;"	f	class:Worker
+getLinkTarget	worker.cpp	/^string Worker::getLinkTarget(char * path)$/;"	f	class:Worker
+getLoadAverage	worker.cpp	/^double Worker::getLoadAverage()$/;"	f	class:Worker
+getNfolders	worker.cpp	/^vector<poolfolder_t> Worker::getNfolders(int n)$/;"	f	class:Worker
+getPoolSizes	worker.cpp	/^void Worker::getPoolSizes()$/;"	f	class:Worker
+getSettings	worker.cpp	/^settings_t * Worker::getSettings()$/;"	f	class:Worker
+getStructFromPath	worker.cpp	/^void Worker::getStructFromPath(xfolder_t * xfolder, xfile_t * xfile, string path)$/;"	f	class:Worker
+getTime	worker.cpp	/^string Worker::getTime(const char * format)$/;"	f	class:Worker
+linktst	testWorker.cpp	/^void linktst(string testlink)$/;"	f
+loadFileStructure	worker.cpp	/^void Worker::loadFileStructure()$/;"	f	class:Worker
+loadSettings	worker.cpp	/^void Worker::loadSettings()$/;"	f	class:Worker
+logFile	worker.h	/^        string logFile;$/;"	m	class:Worker
+main	main.cpp	/^int main()$/;"	f
+main	makefile	/^main = testWorker$/;"	m
+main	test.cpp	/^int main()$/;"	f
+main	testWorker.cpp	/^int main()$/;"	f
+maxLoadAverage	worker.h	/^    double maxLoadAverage;$/;"	m	struct:settings_t
+maxLoadSleep	worker.h	/^    int maxLoadSleep;$/;"	m	struct:settings_t
+maxWorkerThreads	worker.h	/^    int maxWorkerThreads;$/;"	m	struct:settings_t
+mutex	testWorker.cpp	/^pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;$/;"	v
+naam	makefile	/^naam = flexdir$/;"	m
+name	worker.h	/^    string name;$/;"	m	struct:poolfile_t
+name	worker.h	/^    string name;$/;"	m	struct:xfile_t
+nfoldertest	testWorker.cpp	/^void nfoldertest()$/;"	f
+p_path	worker.h	/^    string p_path;$/;"	m	struct:poolfile_t
+path	worker.h	/^    string path;$/;"	m	struct:poolfolder_t
+path	worker.h	/^    string path;$/;"	m	struct:xfolder_t
+poolFolders	worker.h	/^    vector<poolfolder_t> poolFolders;$/;"	m	struct:settings_t
+poolfile_t	worker.h	/^struct poolfile_t$/;"	s
+poolfolderSort	worker.cpp	/^bool poolfolderSort(poolfolder_t d1, poolfolder_t d2)$/;"	f
+poolfolder_t	worker.h	/^struct poolfolder_t$/;"	s
+printFileStructure	worker.cpp	/^void Worker::printFileStructure()$/;"	f	class:Worker
+printSettings	worker.cpp	/^void Worker::printSettings()$/;"	f	class:Worker
+role	worker.h	/^    role_t role;$/;"	m	struct:poolfile_t
+role	worker.h	/^    role_t role;$/;"	m	struct:xfile_t
+role_t	worker.h	/^enum role_t { NONE, XFILE, NEW, PRIMARY, SECONDARY, ORPHAN, COPIES };$/;"	g
+s	testWorker.cpp	/^settings_t * s;$/;"	v
+settings	worker.h	/^        settings_t settings;$/;"	m	class:Worker
+settingsValidLine	worker.cpp	/^bool Worker::settingsValidLine(const string &line) const$/;"	f	class:Worker
+settings_t	worker.h	/^struct settings_t $/;"	s
+sizeMB	worker.h	/^    long sizeMB;$/;"	m	struct:poolfolder_t
+start	checker.cpp	/^void Checker::start()$/;"	f	class:Checker
+start	watcher.cpp	/^void Watcher::start()$/;"	f	class:Watcher
+startDaemon	main.cpp	/^void startDaemon()$/;"	f
+startThreads	main.cpp	/^void startThreads()$/;"	f
+startThreads	testWorker.cpp	/^void startThreads()$/;"	f
+startWorker	worker.cpp	/^void Worker::startWorker(pthread_mutex_t * mutex, pthread_cond_t * condition)$/;"	f	class:Worker
+symlinkTest	testWorker.cpp	/^void symlinkTest(){$/;"	f
+taskID_t	worker.h	/^enum taskID_t { ADD, SYNC, DELETE, REMOVE, RENAME };$/;"	g
+task_t	worker.h	/^struct task_t$/;"	s
+tasks	worker.h	/^    queue<task_t> tasks;$/;"	m	struct:settings_t
+testTasks	testWorker.cpp	/^void testTasks()$/;"	f
+to	worker.h	/^    string to;$/;"	m	struct:task_t
+usedPerc	worker.h	/^    double usedPerc;$/;"	m	struct:poolfolder_t
+verbose	worker.h	/^    bool verbose;$/;"	m	struct:settings_t
+w	main.cpp	/^Checker ch(&w);$/;"	v
+w	main.cpp	/^Watcher wa(&w);$/;"	v
+w	main.cpp	/^Worker w;$/;"	v
+wThread	testWorker.cpp	/^void * wThread(void * id)$/;"	f
+watchdescriptor	worker.h	/^    int watchdescriptor;$/;"	m	struct:xfolder_t
+watcherThread	main.cpp	/^void * watcherThread(void * id)$/;"	f
+worker	checker.h	/^        Worker * worker;$/;"	m	class:Checker
+worker	watcher.h	/^        Worker * worker;$/;"	m	class:Watcher
+working	worker.h	/^        bool working;$/;"	m	class:Worker
+writeLog	worker.cpp	/^void Worker::writeLog(string txt)$/;"	f	class:Worker
+xFolders	worker.h	/^    vector<xfolder_t> xFolders;$/;"	m	struct:settings_t
+x_path	worker.h	/^    string x_path;$/;"	m	struct:poolfile_t
+x_path	worker.h	/^    string x_path;$/;"	m	struct:xfile_t
+xfile_t	worker.h	/^struct xfile_t$/;"	s
+xfolder_t	worker.h	/^struct xfolder_t$/;"	s
+~Checker	checker.cpp	/^Checker::~Checker()$/;"	f	class:Checker
+~Watcher	watcher.cpp	/^Watcher::~Watcher()$/;"	f	class:Watcher
+~Worker	worker.cpp	/^Worker::~Worker()$/;"	f	class:Worker
