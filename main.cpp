@@ -1,5 +1,3 @@
-//nog een test
-//test push
 #include <iostream>
 #include <cstdlib>
 #include <string>
