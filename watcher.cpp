@@ -33,16 +33,16 @@ void Watcher::start()
     }
 
     //add watches
-    int w1,w2; //TODO: use array of folders from config file
-    vector<xfolder_t>::iterator it;
+    int w1,w2; //TODO: use array of dirs from config file
+    vector<flexdir_t>::iterator it;
     settings_t * s = worker->getSettings();
-    for(it = s->xFolders.begin(); it != s->xFolders.end(); it++)
+    for(it = s->flexdirs.begin(); it != s->flexdirs.end(); it++)
     {
         it->watchdescriptor = inotify_add_watch(fd, (char * )it->path.c_str(), 
             IN_CREATE | IN_DELETE | IN_MOVED_FROM | IN_MOVED_TO);
     }
 
-    // watch folders
+    // watch dirs
     while(1)
     {
         length = read(fd, buffer, EVENT_BUF_LEN); //read inotify events, blocks until event
@@ -58,7 +58,7 @@ void Watcher::start()
             struct inotify_event * next = (struct inotify_event *) &buffer[n];
             if (event->len)
             {
-                //TODO: find xfolder from event->wd
+                //TODO: find flexdir from event->wd
                 if ((event->cookie == next->cookie) && (event->wd == next->wd)) //is rename
                 {
                     worker->writeLog("RENAME EVENT: from: " +(string) event->name + 
@@ -81,7 +81,7 @@ void Watcher::start()
         }
         i = 0;
     }
-    //TODO: use array of folders from config file
+    //TODO: use array of dirs from config file
     //TODO: code will never reach this line
     inotify_rm_watch(fd, w1);
     inotify_rm_watch(fd, w2);

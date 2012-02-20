@@ -13,7 +13,7 @@ settings_t * s;
 void fileTest();
 void symlinkTest();
 void linktst(string testlink);
-void nfoldertest();
+void ndirtest();
 void testTasks();
 void startThreads();
 void * wThread(void * id);
@@ -29,7 +29,7 @@ int main()
     //fileTest();
     //w.printSettings();    
     //w.printFileStructure();
-    //nfoldertest();
+    //ndirtest();
 }
 
 void startThreads()
@@ -128,23 +128,23 @@ void fileTest()
     {
         cout << "testfile deleted" << endl;
     }
-    w.actionCreateFolder((char*)"/home/jos/pool2/home/jos/tmp");
+    w.actionCreatedir((char*)"/home/jos/pool2/home/jos/tmp");
     if (w.getFileExists((char*)"/home/jos/pool2/home/jos/tmp"))
     {
-        cout << "testfolder created" << endl;
+        cout << "testdir created" << endl;
     }
     else
     {
-        cout << "error creating folder" << endl;
+        cout << "error creating dir" << endl;
     }
 }
 
-void nfoldertest()
+void ndirtest()
 {
-    vector<poolfolder_t> folders = w.getNfolders(2); 
-    vector<poolfolder_t>::iterator iter;
-    cout << "the two most empty folders are: " << endl;
-    for(iter=folders.begin(); iter != folders.end(); iter++)
+    vector<pooldir_t> dirs = w.getNdirs(2); 
+    vector<pooldir_t>::iterator iter;
+    cout << "the two most empty dirs are: " << endl;
+    for(iter=dirs.begin(); iter != dirs.end(); iter++)
     {
         cout << iter->usedPerc << "  :  " << iter->path << endl;
     }

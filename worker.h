@@ -7,7 +7,7 @@
 
 using namespace std;
 
-enum role_t { NONE, XFILE, NEW, PRIMARY, SECONDARY, ORPHAN, COPIES };
+enum role_t { NONE, FLEXFILE, NEW, PRIMARY, SECONDARY, ORPHAN, COPIES };
 enum taskID_t { ADD, SYNC, DELETE, REMOVE, RENAME };
 
 struct task_t
@@ -17,7 +17,7 @@ struct task_t
     string to;
 };
 
-struct xfile_t
+struct flexfile_t
 {
     string name;
     string x_path;
@@ -25,12 +25,12 @@ struct xfile_t
     int copies;
 };
 
-struct xfolder_t
+struct flexdir_t
 {
     string path;
     int copies;
     int watchdescriptor;
-    vector<xfile_t> files;
+    vector<flexfile_t> files;
 };
 
 struct poolfile_t
@@ -41,7 +41,7 @@ struct poolfile_t
     role_t role;
 };
 
-struct poolfolder_t
+struct pooldir_t
 {
     string path;
     long sizeMB;
@@ -50,12 +50,12 @@ struct poolfolder_t
     vector<poolfile_t> files;
 };
 
-bool poolfolderSort(poolfolder_t d1, poolfolder_t d2);
+bool pooldirSort(pooldir_t d1, pooldir_t d2);
 
 struct settings_t 
 {
-    vector<xfolder_t> xFolders;
-    vector<poolfolder_t> poolFolders;
+    vector<flexdir_t> flexdirs;
+    vector<pooldir_t> pooldirs;
     queue<task_t> tasks;
     int maxWorkerThreads;
     double maxLoadAverage;
@@ -74,7 +74,7 @@ class Worker
         bool settingsValidLine(const string &line) const;
         void getPoolSizes();
         void loadFileStructure();
-        void getStructFromPath(xfolder_t * xfolder, xfile_t * xfile, string path);
+        void getStructFromPath(flexdir_t * flexdir, flexfile_t * flexfile, string path);
     public:
         Worker();
         ~Worker();
@@ -83,7 +83,7 @@ class Worker
         string getTime(const char * format);
         settings_t * getSettings();
         void printSettings();
-        vector<poolfolder_t> getNfolders(int n);
+        vector<pooldir_t> getNdirs(int n);
         bool getFileExists(const char * path);
         void printFileStructure();
         bool getIsLink(char * path);
@@ -94,7 +94,7 @@ class Worker
         int actionSyncFile(char * from, char * to);
         int actionCreateLink(char * target, char * linkname);
         int actionChangeLink(char * link, char * newTarget);
-        int actionCreateFolder(char * path);
+        int actionCreatedir(char * path);
         void startWorker(pthread_mutex_t * mutex, pthread_cond_t * condition);
         int addTask(taskID_t ID, string from, string to);
         int doTask(task_t * task);

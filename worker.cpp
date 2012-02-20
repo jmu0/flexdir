@@ -4,7 +4,7 @@
 #include <fstream>//filestream
 #include <sstream>//stringstream
 #include <time.h>//getTime
-#include <vector> //list folders
+#include <vector> //list dirs
 #include <queue>//task queue
 #include <sys/stat.h>//for file-exist
 #include <sys/statvfs.h>//for disk sizes
@@ -14,8 +14,9 @@
 #include <algorithm> //sort vectors
 #include <pthread.h> //posix threads
 
-#define SETTINGS "/home/jos/Git/flexdir/flexdir.conf"
-#define DEF_LOGFILE "/home/jos/Git/flexdir/flexdir.log"
+#define SETTINGS "/home/jos/cpp-projects/blackhole/blackhole.conf"
+#define DEF_LOGFILE "/home/jos/cpp-projects/blackhole/blackhole.log"
+#define TASK_CUE "/home/jos/cpp-projects/blackhole/blackhole.cue"
 #define MAX_LOAD_AVG 1
 #define MAX_LOAD_SLEEP 5
 #define MAX_WORKER_THREADS 5
@@ -115,9 +116,9 @@ void Worker::loadSettings()
                     writeLog("ERROR: settings: could not read maxWorkerThreads, set default");
                 }
             }
-            else if(key == "xFolder")
+            else if(key == "flexdir")
             {
-                xfolder_t f;
+                flexdir_t f;
                 f.path = value.substr(0, value.find_last_of(' '));
                 if (getFileExists((char *) f.path.c_str()))
                 {
@@ -125,30 +126,30 @@ void Worker::loadSettings()
                     if (!(str >> f.copies))
                     {
                         f.copies=1;
-                        writeLog("ERROR: settings: could not read xfolder copies, set 1");
+                        writeLog("ERROR: settings: could not read flexdir copies, set 1");
                     }
                     f.watchdescriptor = -1;
-                    settings.xFolders.push_back(f);
+                    settings.flexdirs.push_back(f);
                 }
                 else
                 {
-                    writeLog("ERROR: settings: xfolder " + (string)f.path + " doesn't exist");
+                    writeLog("ERROR: settings: flexdir " + (string)f.path + " doesn't exist");
                 }
             }
-            else if(key == "poolFolder")
+            else if(key == "pooldir")
             {
-                poolfolder_t f;
+                pooldir_t f;
                 if (getFileExists((char*) value.c_str()))
                 {
                     f.path = value;
                     f.sizeMB = -1;
                     f.freeMB = -1;
                     f.usedPerc = -1;
-                    settings.poolFolders.push_back(f);
+                    settings.pooldirs.push_back(f);
                 }
                 else
                 {
-                    writeLog("ERROR: settings: poolfolder " + (string)value + " doesn't exist");
+                    writeLog("ERROR: settings: pooldir " + (string)value + " doesn't exist");
                 }
             }
         }
@@ -199,35 +200,35 @@ void Worker::printSettings()
     cout << "  <maxLoadSleep>" << settings.maxLoadSleep << "</maxLoadSleep>" << endl;
     cout << "  <maxWorkerThreads>" << settings.maxWorkerThreads 
         << "</maxWorkerThreads>" << endl;
-    vector<xfolder_t>::iterator ixf;
-    cout << "  <xfolders>" << endl;
-    for(ixf = settings.xFolders.begin(); ixf != settings.xFolders.end(); ixf++)
+    vector<flexdir_t>::iterator ixf;
+    cout << "  <flexdirs>" << endl;
+    for(ixf = settings.flexdirs.begin(); ixf != settings.flexdirs.end(); ixf++)
     {
-        cout << "    <xfolder>\n";
+        cout << "    <flexdir>\n";
         cout << "      <path>" <<  ixf->path << "</path>\n";
         cout << "      <copies>" << ixf->copies << "</copies>\n"; 
         cout << "      <watchdescriptor>" << ixf->watchdescriptor << "</watchdescriptor>\n";
-        cout << "    </xfolder>" << endl;
+        cout << "    </flexdir>" << endl;
     }
-    cout << "  </xfolders>\n  <poolfolders>" << endl;
-    vector<poolfolder_t>::iterator ipf;
-    for(ipf = settings.poolFolders.begin(); ipf != settings.poolFolders.end(); ipf++)
+    cout << "  </flexdirs>\n  <pooldirs>" << endl;
+    vector<pooldir_t>::iterator ipf;
+    for(ipf = settings.pooldirs.begin(); ipf != settings.pooldirs.end(); ipf++)
     {
-        cout << "    <poolfolder>\n";
+        cout << "    <pooldir>\n";
         cout << "      <path>" << ipf->path << "</path>\n";
         cout << "      <sizeMB>" << ipf->sizeMB << "</sizeMB>\n";
         cout << "      <freeMB>" << ipf->freeMB << "</freeMB>\n";
         cout << "      <usedPerc>" << ipf->usedPerc << "</usedPerc>\n";
-        cout << "    </poolfolder>" << endl;
+        cout << "    </pooldir>" << endl;
     }
-    cout << "  </poolfolders>\n</settings>" << endl;
+    cout << "  </pooldirs>\n</settings>" << endl;
 }
 
 void Worker::getPoolSizes()
 {
     struct statvfs buffer;
-    vector<poolfolder_t>::iterator iter;
-    for(iter = settings.poolFolders.begin(); iter != settings.poolFolders.end(); iter++)
+    vector<pooldir_t>::iterator iter;
+    for(iter = settings.pooldirs.begin(); iter != settings.pooldirs.end(); iter++)
     {
         if (!statvfs((char*)iter->path.c_str(), &buffer))
         {
@@ -249,9 +250,9 @@ void Worker::getPoolSizes()
 
 void Worker::loadFileStructure()
 {
-    vector<poolfolder_t>::iterator ip;
-    vector<xfolder_t>::iterator ix;
-    for(ix = settings.xFolders.begin(); ix != settings.xFolders.end(); ix++)
+    vector<pooldir_t>::iterator ip;
+    vector<flexdir_t>::iterator ix;
+    for(ix = settings.flexdirs.begin(); ix != settings.flexdirs.end(); ix++)
     {
         DIR* dir = opendir((char*)ix->path.c_str());
         if (dir)
@@ -261,7 +262,7 @@ void Worker::loadFileStructure()
             {
                 if ((string)entry->d_name != "." && (string)entry->d_name != "..")
                 {
-                    xfile_t f;
+                    flexfile_t f;
                     f.name = entry->d_name;
                     f.x_path = ix->path;
                     f.role = NONE;
@@ -272,12 +273,12 @@ void Worker::loadFileStructure()
         }
         else
         {
-            writeLog("ERROR: loadFileStructure: could not open xfile: "+ (string)ix->path);
+            writeLog("ERROR: loadFileStructure: could not open flexfile: "+ (string)ix->path);
         }
     }
-    for(ip = settings.poolFolders.begin(); ip != settings.poolFolders.end(); ip++)
+    for(ip = settings.pooldirs.begin(); ip != settings.pooldirs.end(); ip++)
     {
-        for(ix = settings.xFolders.begin(); ix != settings.xFolders.end(); ix++)
+        for(ix = settings.flexdirs.begin(); ix != settings.flexdirs.end(); ix++)
         {
             string pad = ip->path + "/" + ix->path;
             if (getFileExists((char*)pad.c_str()))
@@ -312,33 +313,33 @@ void Worker::printFileStructure()
 {
     loadFileStructure();
     cout << "<fileStructure>" << endl;
-    vector<xfolder_t>::iterator ixf;
-    vector<xfile_t>::iterator xf;
-    cout << "  <xfolders>" << endl;
-    for(ixf = settings.xFolders.begin(); ixf != settings.xFolders.end(); ixf++)
+    vector<flexdir_t>::iterator ixf;
+    vector<flexfile_t>::iterator xf;
+    cout << "  <flexdirs>" << endl;
+    for(ixf = settings.flexdirs.begin(); ixf != settings.flexdirs.end(); ixf++)
     {
-        cout << "    <xfolder>\n";
+        cout << "    <flexdir>\n";
         cout << "      <path>" <<  ixf->path << "</path>\n";
         cout << "      <copies>" << ixf->copies << "</copies>\n"; 
         cout << "      <watchdescriptor>" << ixf->watchdescriptor << "</watchdescriptor>\n";
         cout << "      <files>" << endl;
         for(xf = ixf->files.begin(); xf != ixf->files.end(); xf++)
         {
-            cout << "        <xfile>" << endl;
+            cout << "        <flexfile>" << endl;
             cout << "          <name>" << xf->name << "</name>\n";
             cout << "          <x_path>" << xf->x_path << "</x_path>\n";
             cout << "          <role>" << xf->role << "</role>\n";
-            cout << "        </xfile>" << endl;
+            cout << "        </flexfile>" << endl;
         }
         cout << "      </files>" << endl;
-        cout << "    </xfolder>" << endl;
+        cout << "    </flexdir>" << endl;
     }
-    cout << "  </xfolders>\n  <poolfolders>" << endl;
-    vector<poolfolder_t>::iterator ipf;
+    cout << "  </flexdirs>\n  <pooldirs>" << endl;
+    vector<pooldir_t>::iterator ipf;
     vector<poolfile_t>::iterator pf;
-    for(ipf = settings.poolFolders.begin(); ipf != settings.poolFolders.end(); ipf++)
+    for(ipf = settings.pooldirs.begin(); ipf != settings.pooldirs.end(); ipf++)
     {
-        cout << "    <poolfolder>\n";
+        cout << "    <pooldir>\n";
         cout << "      <path>" << ipf->path << "</path>\n";
         cout << "      <sizeMB>" << ipf->sizeMB << "</sizeMB>\n";
         cout << "      <freeMB>" << ipf->freeMB << "</freeMB>\n";
@@ -354,9 +355,9 @@ void Worker::printFileStructure()
             cout << "        </poolfile>" << endl;
         }
         cout << "      </files>" << endl;
-        cout << "    </poolfolder>" << endl;
+        cout << "    </pooldir>" << endl;
     }
-    cout << "  </poolfolders>\n</fileStructure>" << endl;
+    cout << "  </pooldirs>\n</fileStructure>" << endl;
 }
 
 void Worker::writeLog(string txt)
@@ -393,19 +394,19 @@ double Worker::getLoadAverage()
     return loadavg;
 }
 
-bool poolfolderSort(poolfolder_t d1, poolfolder_t d2)
+bool pooldirSort(pooldir_t d1, pooldir_t d2)
 {
     return d1.usedPerc < d2.usedPerc;
 }
 
-vector<poolfolder_t> Worker::getNfolders(int n)
+vector<pooldir_t> Worker::getNdirs(int n)
 {
-    vector<poolfolder_t> ret;
+    vector<pooldir_t> ret;
     int teller = 0;
-    vector<poolfolder_t>::iterator i;
+    vector<pooldir_t>::iterator i;
     getPoolSizes();
-    sort(settings.poolFolders.begin(), settings.poolFolders.end(), poolfolderSort);
-    for(i=settings.poolFolders.begin(); i != settings.poolFolders.end(); i++)
+    sort(settings.pooldirs.begin(), settings.pooldirs.end(), pooldirSort);
+    for(i=settings.pooldirs.begin(); i != settings.pooldirs.end(); i++)
     {
         ret.push_back(*i);
         teller++;
@@ -502,7 +503,7 @@ int Worker::actionChangeLink(char * link, char * newTarget)
     return ret;
 }
 
-int Worker::actionCreateFolder(char * path)
+int Worker::actionCreatedir(char * path)
 {
     string cmd = "mkdir -p " + (string)path;
     //TODO: find alternative for system call (mkdir not recursive)
@@ -602,10 +603,10 @@ void Worker::startWorker(pthread_mutex_t * mutex, pthread_cond_t * condition)
     return 0;
 }
 
-void Worker::getStructFromPath(xfolder_t * xfolder, xfile_t * xfile, string path)
+void Worker::getStructFromPath(flexdir_t * flexdir, flexfile_t * flexfile, string path)
 {
-    xfolder = 0;
-    xfile = 0;
+    flexdir = 0;
+    flexfile = 0;
 
 }
 
