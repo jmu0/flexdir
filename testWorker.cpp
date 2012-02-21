@@ -26,12 +26,12 @@ int main()
 {
     s = w.getSettings();
     s->verbose = true;   
-    //symlinkTest();
-    //fileTest();
-    //w.printSettings();    
-    //w.printFileStructure();
-    //ndirtest();
-    //testFunctions();
+    symlinkTest();
+    fileTest();
+    w.printSettings();    
+    w.printFileStructure();
+    ndirtest();
+    testFunctions();
     startThreads();
 }
 
@@ -222,13 +222,25 @@ void testTasks()
         }
     }
     pthread_cond_signal(&condition);
+    
     system("touch /home/jos/tmp/addTest.txt");
     cout << "TEST add task" << endl;
     pthread_mutex_lock(&mutex);
     w.addTask(ADD, "/home/jos/tmp/addTest.txt", " ");
     pthread_mutex_unlock(&mutex);
     pthread_cond_signal(&condition);
+
+    sleep(1); //wait for previous task to complete
+    Worker wo = w;
+    wo.actionMoveFile("/home/jos/tmp/addTest.txt", "/home/jos/tmp/renameTest.txt");
+    cout << "TEST rename task" << endl;
+    pthread_mutex_lock(&mutex);
+    w.addTask(RENAME, "/home/jos/tmp/addTest.txt", "/home/jos/tmp/renameTest.txt");
+    pthread_mutex_unlock(&mutex);
+    pthread_cond_signal(&condition);
+
     system("touch /home/jos/pool1/home/jos/tmp/removeTest.txt");
+    cout << "TEST remove task" << endl;
     pthread_mutex_lock(&mutex);
     w.addTask(REMOVE, "/home/jos/pool1/home/jos/tmp/removeTest.txt", " ");
     pthread_mutex_unlock(&mutex);

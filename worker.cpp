@@ -735,11 +735,9 @@ int Worker::doTask(task_t * task)
                     string fromPath, toPath;
                     for (pfit = poolfiles.begin(); pfit != poolfiles.end(); pfit++)
                     {
-                        fromPath = pfit->p_path + pfit->x_path + "/" + pfit->name;
-                        toPath = pfit->p_path + pfit->x_path + "/" + task->to;
-                        hier was ik
-
-                        if (actionMoveFile((char*)task->from.c_str(), (char*)task->to.c_str()) != 0)
+                        fromPath = pfit->p_path + task->from;
+                        toPath = pfit->p_path + task->to;
+                        if (actionMoveFile((char*)fromPath.c_str(), (char*)toPath.c_str()) != 0)
                         {
                             renameError = true;
                         }
@@ -747,6 +745,14 @@ int Worker::doTask(task_t * task)
                     //change link target 
                     if (renameError == false)
                     {
+                        if (actionChangeLink((char*)task->to.c_str(), (char*)toPath.c_str()) == 0)
+                        {
+                            logEntry += "OK ";
+                        }
+                        else
+                        {
+                            logEntry += "FAILED could not change link target ";
+                        }
                     }
                     else
                     {
