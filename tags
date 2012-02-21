@@ -7,22 +7,14 @@
 ADD	worker.h	/^enum taskID_t { ADD, SYNC, DELETE, REMOVE, RENAME };$/;"	e	enum:taskID_t
 CHECKER_H	checker.h	2;"	d
 COPIES	worker.h	/^enum role_t { NONE, FLEXFILE, NEW, PRIMARY, SECONDARY, ORPHAN, COPIES };$/;"	e	enum:role_t
-Checker	checker.cpp	/^Checker::Checker(Worker * w)$/;"	f	class:Checker	signature:(Worker * w)
-Checker	checker.h	/^        Checker(Worker * w);$/;"	p	class:Checker	access:public	signature:(Worker * w)
+Checker	checker.cpp	/^Checker::Checker(Worker * w)$/;"	f	class:Checker
 Checker	checker.h	/^class Checker$/;"	c
-Checker::Checker	checker.cpp	/^Checker::Checker(Worker * w)$/;"	f	class:Checker	signature:(Worker * w)
-Checker::Checker	checker.h	/^        Checker(Worker * w);$/;"	p	class:Checker	access:public	signature:(Worker * w)
-Checker::start	checker.cpp	/^void Checker::start()$/;"	f	class:Checker	signature:()
-Checker::start	checker.h	/^        void start();$/;"	p	class:Checker	access:public	signature:()
-Checker::worker	checker.h	/^        Worker * worker;$/;"	m	class:Checker	access:private
-Checker::~Checker	checker.cpp	/^Checker::~Checker()$/;"	f	class:Checker	signature:()
-Checker::~Checker	checker.h	/^        ~Checker();$/;"	p	class:Checker	access:public	signature:()
 DEF_LOGFILE	worker.cpp	18;"	d	file:
 DELETE	worker.h	/^enum taskID_t { ADD, SYNC, DELETE, REMOVE, RENAME };$/;"	e	enum:taskID_t
-EVENT_BUF_LEN	watcher.cpp	12;"	d	file:
-EVENT_SIZE	watcher.cpp	11;"	d	file:
+EVENT_BUF_LEN	watcher.cpp	13;"	d	file:
+EVENT_SIZE	watcher.cpp	12;"	d	file:
 FLEXFILE	worker.h	/^enum role_t { NONE, FLEXFILE, NEW, PRIMARY, SECONDARY, ORPHAN, COPIES };$/;"	e	enum:role_t
-ID	worker.h	/^    taskID_t ID;$/;"	m	struct:task_t	access:public
+ID	worker.h	/^    taskID_t ID;$/;"	m	struct:task_t
 MAX_LOAD_AVG	worker.cpp	19;"	d	file:
 MAX_LOAD_SLEEP	worker.cpp	20;"	d	file:
 MAX_WORKER_THREADS	worker.cpp	21;"	d	file:
@@ -38,452 +30,129 @@ SYNC	worker.h	/^enum taskID_t { ADD, SYNC, DELETE, REMOVE, RENAME };$/;"	e	enum:
 VERBOSE	worker.cpp	22;"	d	file:
 WATCHER_H	watcher.h	2;"	d
 WORKER_H	worker.h	2;"	d
-Watcher	watcher.cpp	/^Watcher::Watcher(Worker * w)$/;"	f	class:Watcher	signature:(Worker * w)
-Watcher	watcher.h	/^        Watcher(Worker * w);$/;"	p	class:Watcher	access:public	signature:(Worker * w)
+Watcher	watcher.cpp	/^Watcher::Watcher(Worker * w)$/;"	f	class:Watcher
 Watcher	watcher.h	/^class Watcher$/;"	c
-Watcher::Watcher	watcher.cpp	/^Watcher::Watcher(Worker * w)$/;"	f	class:Watcher	signature:(Worker * w)
-Watcher::Watcher	watcher.h	/^        Watcher(Worker * w);$/;"	p	class:Watcher	access:public	signature:(Worker * w)
-Watcher::start	watcher.cpp	/^void Watcher::start()$/;"	f	class:Watcher	signature:()
-Watcher::start	watcher.h	/^        void start();$/;"	p	class:Watcher	access:public	signature:()
-Watcher::worker	watcher.h	/^        Worker * worker;$/;"	m	class:Watcher	access:private
-Watcher::~Watcher	watcher.cpp	/^Watcher::~Watcher()$/;"	f	class:Watcher	signature:()
-Watcher::~Watcher	watcher.h	/^        ~Watcher();$/;"	p	class:Watcher	access:public	signature:()
-Worker	worker.cpp	/^Worker::Worker()$/;"	f	class:Worker	signature:()
-Worker	worker.h	/^        Worker();$/;"	p	class:Worker	access:public	signature:()
+Worker	worker.cpp	/^Worker::Worker()$/;"	f	class:Worker
 Worker	worker.h	/^class Worker$/;"	c
-Worker::Worker	worker.cpp	/^Worker::Worker()$/;"	f	class:Worker	signature:()
-Worker::Worker	worker.h	/^        Worker();$/;"	p	class:Worker	access:public	signature:()
-Worker::actionChangeLink	worker.cpp	/^int Worker::actionChangeLink(char * link, char * newTarget)$/;"	f	class:Worker	signature:(char * link, char * newTarget)
-Worker::actionChangeLink	worker.h	/^        int actionChangeLink(char * link, char * newTarget);$/;"	p	class:Worker	access:public	signature:(char * link, char * newTarget)
-Worker::actionCopyFile	worker.cpp	/^int Worker::actionCopyFile(char * from, char * to)\/\/TODO: use rsync$/;"	f	class:Worker	signature:(char * from, char * to)
-Worker::actionCopyFile	worker.h	/^        int actionCopyFile(char * from, char * to);$/;"	p	class:Worker	access:public	signature:(char * from, char * to)
-Worker::actionCreateLink	worker.cpp	/^int Worker::actionCreateLink(char * target, char * linkname)$/;"	f	class:Worker	signature:(char * target, char * linkname)
-Worker::actionCreateLink	worker.h	/^        int actionCreateLink(char * target, char * linkname);$/;"	p	class:Worker	access:public	signature:(char * target, char * linkname)
-Worker::actionCreatedir	worker.cpp	/^int Worker::actionCreatedir(char * path)$/;"	f	class:Worker	signature:(char * path)
-Worker::actionCreatedir	worker.h	/^        int actionCreatedir(char * path);$/;"	p	class:Worker	access:public	signature:(char * path)
-Worker::actionDeleteFile	worker.cpp	/^int Worker::actionDeleteFile(char * path)$/;"	f	class:Worker	signature:(char * path)
-Worker::actionDeleteFile	worker.h	/^        int actionDeleteFile(char * path);$/;"	p	class:Worker	access:public	signature:(char * path)
-Worker::actionMoveFile	worker.cpp	/^int Worker::actionMoveFile(char * from, char * to)$/;"	f	class:Worker	signature:(char * from, char * to)
-Worker::actionMoveFile	worker.h	/^        int actionMoveFile(char * from, char * to);$/;"	p	class:Worker	access:public	signature:(char * from, char * to)
-Worker::actionSyncFile	worker.cpp	/^int Worker::actionSyncFile(char * from, char * to)$/;"	f	class:Worker	signature:(char * from, char * to)
-Worker::actionSyncFile	worker.h	/^        int actionSyncFile(char * from, char * to);$/;"	p	class:Worker	access:public	signature:(char * from, char * to)
-Worker::addTask	worker.cpp	/^int Worker::addTask(taskID_t ID, string from, string to)$/;"	f	class:Worker	signature:(taskID_t ID, string from, string to)
-Worker::addTask	worker.h	/^        int addTask(taskID_t ID, string from, string to);$/;"	p	class:Worker	access:public	signature:(taskID_t ID, string from, string to)
-Worker::doTask	worker.cpp	/^int Worker::doTask(task_t * task)$/;"	f	class:Worker	signature:(task_t * task)
-Worker::doTask	worker.h	/^        int doTask(task_t * task);$/;"	p	class:Worker	access:public	signature:(task_t * task)
-Worker::getFileExists	worker.cpp	/^bool Worker::getFileExists(const char * path)$/;"	f	class:Worker	signature:(const char * path)
-Worker::getFileExists	worker.h	/^        bool getFileExists(const char * path);$/;"	p	class:Worker	access:public	signature:(const char * path)
-Worker::getFlexStructFromPath	worker.cpp	/^int Worker::getFlexStructFromPath(flexdir_t * flexdir, flexfile_t * flexfile, string path)$/;"	f	class:Worker	signature:(flexdir_t * flexdir, flexfile_t * flexfile, string path)
-Worker::getFlexStructFromPath	worker.h	/^        int getFlexStructFromPath(flexdir_t * flexdir, flexfile_t * flexfile, string path);$/;"	p	class:Worker	access:public	signature:(flexdir_t * flexdir, flexfile_t * flexfile, string path)
-Worker::getIsLink	worker.cpp	/^bool Worker::getIsLink(char * path)$/;"	f	class:Worker	signature:(char * path)
-Worker::getIsLink	worker.h	/^        bool getIsLink(char * path);$/;"	p	class:Worker	access:public	signature:(char * path)
-Worker::getLinkTarget	worker.cpp	/^string Worker::getLinkTarget(char * path)$/;"	f	class:Worker	signature:(char * path)
-Worker::getLinkTarget	worker.h	/^        string getLinkTarget(char * path);$/;"	p	class:Worker	access:public	signature:(char * path)
-Worker::getLoadAverage	worker.cpp	/^double Worker::getLoadAverage()$/;"	f	class:Worker	signature:()
-Worker::getLoadAverage	worker.h	/^        double getLoadAverage();$/;"	p	class:Worker	access:public	signature:()
-Worker::getNdirs	worker.cpp	/^vector<pooldir_t> Worker::getNdirs(int n)$/;"	f	class:Worker	signature:(int n)
-Worker::getNdirs	worker.h	/^        vector<pooldir_t> getNdirs(int n);$/;"	p	class:Worker	access:public	signature:(int n)
-Worker::getPoolFiles	worker.cpp	/^vector<poolfile_t> Worker::getPoolFiles(flexfile_t * flexfile)$/;"	f	class:Worker	signature:(flexfile_t * flexfile)
-Worker::getPoolFiles	worker.h	/^        vector<poolfile_t> getPoolFiles(flexfile_t * flexfile);$/;"	p	class:Worker	access:private	signature:(flexfile_t * flexfile)
-Worker::getPoolSizes	worker.cpp	/^void Worker::getPoolSizes()$/;"	f	class:Worker	signature:()
-Worker::getPoolSizes	worker.h	/^        void getPoolSizes();$/;"	p	class:Worker	access:private	signature:()
-Worker::getPoolStructFromPath	worker.cpp	/^int Worker::getPoolStructFromPath(pooldir_t * pooldir, poolfile_t * poolfile, string path)$/;"	f	class:Worker	signature:(pooldir_t * pooldir, poolfile_t * poolfile, string path)
-Worker::getPoolStructFromPath	worker.h	/^        int getPoolStructFromPath(pooldir_t * pooldir, poolfile_t * poolfile, string path);$/;"	p	class:Worker	access:public	signature:(pooldir_t * pooldir, poolfile_t * poolfile, string path)
-Worker::getSettings	worker.cpp	/^settings_t * Worker::getSettings()$/;"	f	class:Worker	signature:()
-Worker::getSettings	worker.h	/^        settings_t * getSettings();$/;"	p	class:Worker	access:public	signature:()
-Worker::getTime	worker.cpp	/^string Worker::getTime(const char * format)$/;"	f	class:Worker	signature:(const char * format)
-Worker::getTime	worker.h	/^        string getTime(const char * format);$/;"	p	class:Worker	access:public	signature:(const char * format)
-Worker::loadFileStructure	worker.cpp	/^void Worker::loadFileStructure()$/;"	f	class:Worker	signature:()
-Worker::loadFileStructure	worker.h	/^        void loadFileStructure();$/;"	p	class:Worker	access:private	signature:()
-Worker::loadFlexFiles	worker.cpp	/^void Worker::loadFlexFiles()$/;"	f	class:Worker	signature:()
-Worker::loadFlexFiles	worker.h	/^        void loadFlexFiles();$/;"	p	class:Worker	access:private	signature:()
-Worker::loadPoolFiles	worker.cpp	/^void Worker::loadPoolFiles()$/;"	f	class:Worker	signature:()
-Worker::loadPoolFiles	worker.h	/^        void loadPoolFiles();$/;"	p	class:Worker	access:private	signature:()
-Worker::loadSettings	worker.cpp	/^void Worker::loadSettings()$/;"	f	class:Worker	signature:()
-Worker::loadSettings	worker.h	/^        void loadSettings();$/;"	p	class:Worker	access:private	signature:()
-Worker::logFile	worker.h	/^        string logFile;$/;"	m	class:Worker	access:private
-Worker::printFileStructure	worker.cpp	/^void Worker::printFileStructure()$/;"	f	class:Worker	signature:()
-Worker::printFileStructure	worker.h	/^        void printFileStructure();$/;"	p	class:Worker	access:public	signature:()
-Worker::printSettings	worker.cpp	/^void Worker::printSettings()$/;"	f	class:Worker	signature:()
-Worker::printSettings	worker.h	/^        void printSettings();$/;"	p	class:Worker	access:public	signature:()
-Worker::settings	worker.h	/^        settings_t settings;$/;"	m	class:Worker	access:private
-Worker::settingsValidLine	worker.cpp	/^bool Worker::settingsValidLine(const string &line) const$/;"	f	class:Worker	signature:(const string &line) const
-Worker::settingsValidLine	worker.h	/^        bool settingsValidLine(const string &line) const;$/;"	p	class:Worker	access:private	signature:(const string &line) const
-Worker::startWorker	worker.cpp	/^void Worker::startWorker(pthread_mutex_t * mutex, pthread_cond_t * condition)$/;"	f	class:Worker	signature:(pthread_mutex_t * mutex, pthread_cond_t * condition)
-Worker::startWorker	worker.h	/^        void startWorker(pthread_mutex_t * mutex, pthread_cond_t * condition);$/;"	p	class:Worker	access:public	signature:(pthread_mutex_t * mutex, pthread_cond_t * condition)
-Worker::working	worker.h	/^        bool working;$/;"	m	class:Worker	access:private
-Worker::writeLog	worker.cpp	/^void Worker::writeLog(string txt)$/;"	f	class:Worker	signature:(string txt)
-Worker::writeLog	worker.h	/^        void writeLog(string txt);$/;"	p	class:Worker	access:public	signature:(string txt)
-Worker::~Worker	worker.cpp	/^Worker::~Worker()$/;"	f	class:Worker	signature:()
-Worker::~Worker	worker.h	/^        ~Worker();$/;"	p	class:Worker	access:public	signature:()
-actionChangeLink	worker.cpp	/^int Worker::actionChangeLink(char * link, char * newTarget)$/;"	f	class:Worker	signature:(char * link, char * newTarget)
-actionChangeLink	worker.h	/^        int actionChangeLink(char * link, char * newTarget);$/;"	p	class:Worker	access:public	signature:(char * link, char * newTarget)
-actionCopyFile	worker.cpp	/^int Worker::actionCopyFile(char * from, char * to)\/\/TODO: use rsync$/;"	f	class:Worker	signature:(char * from, char * to)
-actionCopyFile	worker.h	/^        int actionCopyFile(char * from, char * to);$/;"	p	class:Worker	access:public	signature:(char * from, char * to)
-actionCreateLink	worker.cpp	/^int Worker::actionCreateLink(char * target, char * linkname)$/;"	f	class:Worker	signature:(char * target, char * linkname)
-actionCreateLink	worker.h	/^        int actionCreateLink(char * target, char * linkname);$/;"	p	class:Worker	access:public	signature:(char * target, char * linkname)
-actionCreatedir	worker.cpp	/^int Worker::actionCreatedir(char * path)$/;"	f	class:Worker	signature:(char * path)
-actionCreatedir	worker.h	/^        int actionCreatedir(char * path);$/;"	p	class:Worker	access:public	signature:(char * path)
-actionDeleteFile	worker.cpp	/^int Worker::actionDeleteFile(char * path)$/;"	f	class:Worker	signature:(char * path)
-actionDeleteFile	worker.h	/^        int actionDeleteFile(char * path);$/;"	p	class:Worker	access:public	signature:(char * path)
-actionMoveFile	worker.cpp	/^int Worker::actionMoveFile(char * from, char * to)$/;"	f	class:Worker	signature:(char * from, char * to)
-actionMoveFile	worker.h	/^        int actionMoveFile(char * from, char * to);$/;"	p	class:Worker	access:public	signature:(char * from, char * to)
-actionSyncFile	worker.cpp	/^int Worker::actionSyncFile(char * from, char * to)$/;"	f	class:Worker	signature:(char * from, char * to)
-actionSyncFile	worker.h	/^        int actionSyncFile(char * from, char * to);$/;"	p	class:Worker	access:public	signature:(char * from, char * to)
-actualCopies	worker.h	/^    int actualCopies;$/;"	m	struct:flexfile_t	access:public
-addTask	testWorker.cpp	/^            w.addTask(DELETE, t.from, " ");$/;"	p	file:	signature:(DELETE, t.from, Ó)
-addTask	testWorker.cpp	/^            w.addTask(DELETE, t.to, " ");$/;"	p	file:	signature:(DELETE, t.to, Ó)
-addTask	testWorker.cpp	/^            w.addTask(t.ID, t.from, t.to);$/;"	p	file:	signature:(t.ID, t.from, t.to)
-addTask	testWorker.cpp	/^    w.addTask(ADD, "\/home\/jos\/tmp\/addTest.txt", " ");$/;"	p	file:	signature:(ADD, Ó, Ó)
-addTask	testWorker.cpp	/^    w.addTask(REMOVE, "\/home\/jos\/pool1\/home\/jos\/tmp\/removeTest.txt", " ");$/;"	p	file:	signature:(REMOVE, Ó, Ó)
-addTask	testWorker.cpp	/^    w.addTask(RENAME, "\/home\/jos\/tmp\/addTest.txt", "\/home\/jos\/tmp\/renameTest.txt");$/;"	p	file:	signature:(RENAME, Ó, Ó)
-addTask	worker.cpp	/^int Worker::addTask(taskID_t ID, string from, string to)$/;"	f	class:Worker	signature:(taskID_t ID, string from, string to)
-addTask	worker.h	/^        int addTask(taskID_t ID, string from, string to);$/;"	p	class:Worker	access:public	signature:(taskID_t ID, string from, string to)
-bl	worker.cpp	/^            long bl = buffer.f_blocks;$/;"	l
-bs	worker.cpp	/^            long bs = buffer.f_bsize;$/;"	l
-buf	worker.cpp	/^    char buf[512];$/;"	l
-buffer	testWorker.cpp	/^    string buffer;$/;"	l
-buffer	watcher.cpp	/^    char buffer[EVENT_BUF_LEN];$/;"	l
-buffer	worker.cpp	/^    char buffer [80];$/;"	l
-buffer	worker.cpp	/^    struct statvfs buffer;$/;"	l
-checkerThread	flexdird.cpp	/^void * checkerThread(void * id)$/;"	f	signature:(void * id)
-checkerThread	flexdird.cpp	/^void * checkerThread(void * id);$/;"	p	file:	signature:(void * id)
+actionChangeLink	worker.cpp	/^int Worker::actionChangeLink(char * link, char * newTarget)$/;"	f	class:Worker
+actionCopyFile	worker.cpp	/^int Worker::actionCopyFile(char * from, char * to)\/\/TODO: use rsync$/;"	f	class:Worker
+actionCreateLink	worker.cpp	/^int Worker::actionCreateLink(char * target, char * linkname)$/;"	f	class:Worker
+actionCreatedir	worker.cpp	/^int Worker::actionCreatedir(char * path)$/;"	f	class:Worker
+actionDeleteFile	worker.cpp	/^int Worker::actionDeleteFile(char * path)$/;"	f	class:Worker
+actionMoveFile	worker.cpp	/^int Worker::actionMoveFile(char * from, char * to)$/;"	f	class:Worker
+actionRemovePoolFile	worker.cpp	/^int Worker::actionRemovePoolFile(char * path)$/;"	f	class:Worker
+actionSyncFile	worker.cpp	/^int Worker::actionSyncFile(char * from, char * to)$/;"	f	class:Worker
+actualCopies	worker.h	/^    int actualCopies;$/;"	m	struct:flexfile_t
+addTask	worker.cpp	/^int Worker::addTask(taskID_t ID, string from, string to)$/;"	f	class:Worker
+checkerThread	flexdird.cpp	/^void * checkerThread(void * id)$/;"	f
 cli	makefile	/^cli = flexdir$/;"	m
-close	worker.cpp	/^        file.close();$/;"	p	file:	signature:()
-close	worker.cpp	/^    la.close();$/;"	p	file:	signature:()
-close	worker.cpp	/^    log.close();$/;"	p	file:	signature:()
-cmd	worker.cpp	/^    string cmd = "mkdir -p " + (string)path;$/;"	l
-com	worker.cpp	/^    string com = "cp -rsf " + (string)target + " " + (string)linkname;$/;"	l
-com	worker.cpp	/^    string com = "cp -ruf " + (string)from + " " + (string)to; $/;"	l
-com	worker.cpp	/^    string com = "rsync --recursive --perms --delete --update \\"" + (string)from + "\\" \\"" + (string)to +"\\"";$/;"	l
+condition	checker.h	/^        pthread_cond_t * condition;$/;"	m	class:Checker
 condition	flexdird.cpp	/^pthread_cond_t condition = PTHREAD_COND_INITIALIZER;$/;"	v
+condition	testWatcher.cpp	/^pthread_cond_t condition = PTHREAD_COND_INITIALIZER;$/;"	v
 condition	testWorker.cpp	/^pthread_cond_t condition = PTHREAD_COND_INITIALIZER;$/;"	v
-copies	worker.h	/^    int copies;$/;"	m	struct:flexdir_t	access:public
-copyError	worker.cpp	/^    bool copyError = false;$/;"	l
-ct	flexdird.cpp	/^    pthread_t wt, ct;$/;"	l
-daemon	makefile	/^daemon = flexdird$/;"	m
-delPath	worker.cpp	/^                string delPath = pd.path + "\/.deleted" + pf.x_path;$/;"	l
-dir	worker.cpp	/^                DIR* dir = opendir((char*)pad.c_str());$/;"	l
-dir	worker.cpp	/^        DIR* dir = opendir((char*)ix->path.c_str());$/;"	l
-dirs	testWorker.cpp	/^    vector<pooldir_t> dirs = w.getNdirs(2); $/;"	l
-dirs	worker.cpp	/^    vector<pooldir_t> dirs; $/;"	l
-doTask	worker.cpp	/^int Worker::doTask(task_t * task)$/;"	f	class:Worker	signature:(task_t * task)
-doTask	worker.h	/^        int doTask(task_t * task);$/;"	p	class:Worker	access:public	signature:(task_t * task)
-endl	flexdir.cpp	/^    cout << "flexdir CLI" << endl;$/;"	l
-endl	testWorker.cpp	/^            cout << "TEST: task added: " << j << i << endl;$/;"	l
-endl	testWorker.cpp	/^        cout << "error changing linktarget" << endl;$/;"	l
-endl	testWorker.cpp	/^        cout << "error copying testfile" << endl;$/;"	l
-endl	testWorker.cpp	/^        cout << "error creating dir" << endl;$/;"	l
-endl	testWorker.cpp	/^        cout << "error creating testfile" << endl;$/;"	l
-endl	testWorker.cpp	/^        cout << "error deleting testfile" << endl;$/;"	l
-endl	testWorker.cpp	/^        cout << "error linking testfile" << endl;$/;"	l
-endl	testWorker.cpp	/^        cout << "error moving testfile" << endl;$/;"	l
-endl	testWorker.cpp	/^        cout << "no" << endl;$/;"	l
-endl	testWorker.cpp	/^        cout << "testdir created" << endl;$/;"	l
-endl	testWorker.cpp	/^        cout << "testfile copied" << endl;$/;"	l
-endl	testWorker.cpp	/^        cout << "testfile created" << endl;$/;"	l
-endl	testWorker.cpp	/^        cout << "testfile deleted" << endl;$/;"	l
-endl	testWorker.cpp	/^        cout << "testfile moved" << endl;$/;"	l
-endl	testWorker.cpp	/^        cout << buffer<< endl;$/;"	l
-endl	testWorker.cpp	/^    cout << "Flex-structure: \/home\/jos\/tmp\/test1.txt" << endl;$/;"	l
-endl	testWorker.cpp	/^    cout << "Pool-structure: \/home\/jos\/pool1\/home\/jos\/tmp\/test1.txt" << endl;$/;"	l
-endl	testWorker.cpp	/^    cout << "TEST FUNCTIONS" << endl;$/;"	l
-endl	testWorker.cpp	/^    cout << "TEST add task" << endl;$/;"	l
-endl	testWorker.cpp	/^    cout << "TEST remove task" << endl;$/;"	l
-endl	testWorker.cpp	/^    cout << "TEST rename task" << endl;$/;"	l
-endl	testWorker.cpp	/^    cout << "Test copy\/rename\/delete files" << endl;$/;"	l
-endl	testWorker.cpp	/^    cout << "the two most empty dirs are: " << endl;$/;"	l
-endl	worker.cpp	/^            cout << "        <\/flexfile>" << endl;$/;"	l
-endl	worker.cpp	/^            cout << "        <\/poolfile>" << endl;$/;"	l
-endl	worker.cpp	/^            cout << "        <flexfile>" << endl;$/;"	l
-endl	worker.cpp	/^            cout << "        <poolfile>" << endl;$/;"	l
-endl	worker.cpp	/^        cout << "      <\/files>" << endl;$/;"	l
-endl	worker.cpp	/^        cout << "      <files>" << endl;$/;"	l
-endl	worker.cpp	/^        cout << "    <\/flexdir>" << endl;$/;"	l
-endl	worker.cpp	/^        cout << "    <\/pooldir>" << endl;$/;"	l
-endl	worker.cpp	/^        cout << entry << endl;$/;"	l
-endl	worker.cpp	/^    cout << "  <\/flexdirs>\\n  <pooldirs>" << endl;$/;"	l
-endl	worker.cpp	/^    cout << "  <\/pooldirs>\\n<\/fileStructure>" << endl;$/;"	l
-endl	worker.cpp	/^    cout << "  <\/pooldirs>\\n<\/settings>" << endl;$/;"	l
-endl	worker.cpp	/^    cout << "  <flexdirs>" << endl;$/;"	l
-endl	worker.cpp	/^    cout << "<fileStructure>" << endl;$/;"	l
-endl	worker.cpp	/^    cout << "<settings>" << endl;$/;"	l
-entry	worker.cpp	/^                    struct dirent* entry;$/;"	l
-entry	worker.cpp	/^            struct dirent* entry;$/;"	l
-entry	worker.cpp	/^    log << entry << "\\n";$/;"	l
-entry	worker.cpp	/^    string entry = getTime("%d-%m-%Y %H:%M:%S") + " > " + txt;$/;"	l
-erase	worker.cpp	/^                key.erase(key.find_first_of("\\t "));$/;"	p	file:	signature:(key.find_first_of(Ó))
-erase	worker.cpp	/^                temp.erase(temp.find('#'));$/;"	p	file:	signature:(temp.find(Ã))
-erase	worker.cpp	/^            value.erase(value.find_last_not_of("\\t ") + 1);$/;"	p	file:	signature:(value.find_last_not_of(Ó) + 1)
-event	watcher.cpp	/^            struct inotify_event * event = (struct inotify_event *) &buffer[i];$/;"	l
-f	worker.cpp	/^                            poolfile_t f;$/;"	l
-f	worker.cpp	/^                    flexfile_t f;$/;"	l
-f	worker.cpp	/^                flexdir_t f;$/;"	l
-f	worker.cpp	/^                pooldir_t f;$/;"	l
-fb	worker.cpp	/^            long fb = buffer.f_bfree;$/;"	l
-fd	testWorker.cpp	/^    flexdir_t fd;$/;"	l
-fd	watcher.cpp	/^    int length, i = 0, n = 0, fd;$/;"	l
-fd	worker.cpp	/^    flexdir_t fd;$/;"	l
-ff	testWorker.cpp	/^    flexfile_t ff;$/;"	l
-ff	worker.cpp	/^    flexfile_t ff;$/;"	l
-file	testWorker.cpp	/^            string file = "touch " + t.from;$/;"	l
-file	worker.cpp	/^    ifstream file;$/;"	l
-fileTest	testWorker.cpp	/^void fileTest()$/;"	f	signature:()
-fileTest	testWorker.cpp	/^void fileTest();$/;"	p	file:	signature:()
-files	worker.cpp	/^    vector<poolfile_t> files;$/;"	l
-files	worker.h	/^    vector<flexfile_t> files;$/;"	m	struct:flexdir_t	access:public
-files	worker.h	/^    vector<poolfile_t> files;$/;"	m	struct:pooldir_t	access:public
-fit	worker.cpp	/^    vector<flexdir_t>::iterator fit;$/;"	l
+condition	watcher.h	/^        pthread_cond_t * condition;$/;"	m	class:Watcher
+copies	worker.h	/^    int copies;$/;"	m	struct:flexdir_t
+daemon	makefile	/^daemon = testWatcher$/;"	m
+deleteWaitFlag	worker.h	/^    bool deleteWaitFlag;$/;"	m	struct:settings_t
+dirConfig	makefile	/^dirConfig = \/etc$/;"	m
+dirInit	makefile	/^dirInit = \/etc\/rc.d$/;"	m
+dirInstall	makefile	/^dirInstall = \/usr\/local\/bin$/;"	m
+dirLog	makefile	/^dirLog = \/var\/log$/;"	m
+doTask	worker.cpp	/^int Worker::doTask(task_t * task)$/;"	f	class:Worker
+fileTest	testWorker.cpp	/^void fileTest()$/;"	f
+files	worker.h	/^    vector<flexfile_t> files;$/;"	m	struct:flexdir_t
+files	worker.h	/^    vector<poolfile_t> files;$/;"	m	struct:pooldir_t
 flexdir_t	worker.h	/^struct flexdir_t$/;"	s
-flexdir_t::copies	worker.h	/^    int copies;$/;"	m	struct:flexdir_t	access:public
-flexdir_t::files	worker.h	/^    vector<flexfile_t> files;$/;"	m	struct:flexdir_t	access:public
-flexdir_t::path	worker.h	/^    string path;$/;"	m	struct:flexdir_t	access:public
-flexdir_t::watchdescriptor	worker.h	/^    int watchdescriptor;$/;"	m	struct:flexdir_t	access:public
-flexdirs	worker.h	/^    vector<flexdir_t> flexdirs;$/;"	m	struct:settings_t	access:public
+flexdirs	worker.h	/^    vector<flexdir_t> flexdirs;$/;"	m	struct:settings_t
 flexfile_t	worker.h	/^struct flexfile_t$/;"	s
-flexfile_t::actualCopies	worker.h	/^    int actualCopies;$/;"	m	struct:flexfile_t	access:public
-flexfile_t::name	worker.h	/^    string name;$/;"	m	struct:flexfile_t	access:public
-flexfile_t::role	worker.h	/^    role_t role;$/;"	m	struct:flexfile_t	access:public
-flexfile_t::x_path	worker.h	/^    string x_path;$/;"	m	struct:flexfile_t	access:public
-fpath	worker.cpp	/^        string fpath = (*it).path;$/;"	l
-fpath	worker.cpp	/^        string fpath = (*pit).path;$/;"	l
-freeMB	worker.h	/^    long freeMB;$/;"	m	struct:pooldir_t	access:public
-from	worker.h	/^    string from;$/;"	m	struct:task_t	access:public
-fromPath	worker.cpp	/^                    string fromPath, toPath;$/;"	l
-getFileExists	worker.cpp	/^bool Worker::getFileExists(const char * path)$/;"	f	class:Worker	signature:(const char * path)
-getFileExists	worker.h	/^        bool getFileExists(const char * path);$/;"	p	class:Worker	access:public	signature:(const char * path)
-getFlexStructFromPath	worker.cpp	/^int Worker::getFlexStructFromPath(flexdir_t * flexdir, flexfile_t * flexfile, string path)$/;"	f	class:Worker	signature:(flexdir_t * flexdir, flexfile_t * flexfile, string path)
-getFlexStructFromPath	worker.h	/^        int getFlexStructFromPath(flexdir_t * flexdir, flexfile_t * flexfile, string path);$/;"	p	class:Worker	access:public	signature:(flexdir_t * flexdir, flexfile_t * flexfile, string path)
-getIsLink	worker.cpp	/^bool Worker::getIsLink(char * path)$/;"	f	class:Worker	signature:(char * path)
-getIsLink	worker.h	/^        bool getIsLink(char * path);$/;"	p	class:Worker	access:public	signature:(char * path)
-getLinkTarget	worker.cpp	/^string Worker::getLinkTarget(char * path)$/;"	f	class:Worker	signature:(char * path)
-getLinkTarget	worker.h	/^        string getLinkTarget(char * path);$/;"	p	class:Worker	access:public	signature:(char * path)
-getLoadAverage	worker.cpp	/^double Worker::getLoadAverage()$/;"	f	class:Worker	signature:()
-getLoadAverage	worker.h	/^        double getLoadAverage();$/;"	p	class:Worker	access:public	signature:()
-getNdirs	worker.cpp	/^vector<pooldir_t> Worker::getNdirs(int n)$/;"	f	class:Worker	signature:(int n)
-getNdirs	worker.h	/^        vector<pooldir_t> getNdirs(int n);$/;"	p	class:Worker	access:public	signature:(int n)
-getPoolFiles	worker.cpp	/^vector<poolfile_t> Worker::getPoolFiles(flexfile_t * flexfile)$/;"	f	class:Worker	signature:(flexfile_t * flexfile)
-getPoolFiles	worker.h	/^        vector<poolfile_t> getPoolFiles(flexfile_t * flexfile);$/;"	p	class:Worker	access:private	signature:(flexfile_t * flexfile)
-getPoolSizes	worker.cpp	/^void Worker::getPoolSizes()$/;"	f	class:Worker	signature:()
-getPoolSizes	worker.h	/^        void getPoolSizes();$/;"	p	class:Worker	access:private	signature:()
-getPoolStructFromPath	worker.cpp	/^int Worker::getPoolStructFromPath(pooldir_t * pooldir, poolfile_t * poolfile, string path)$/;"	f	class:Worker	signature:(pooldir_t * pooldir, poolfile_t * poolfile, string path)
-getPoolStructFromPath	worker.h	/^        int getPoolStructFromPath(pooldir_t * pooldir, poolfile_t * poolfile, string path);$/;"	p	class:Worker	access:public	signature:(pooldir_t * pooldir, poolfile_t * poolfile, string path)
-getSettings	worker.cpp	/^settings_t * Worker::getSettings()$/;"	f	class:Worker	signature:()
-getSettings	worker.h	/^        settings_t * getSettings();$/;"	p	class:Worker	access:public	signature:()
-getTime	worker.cpp	/^string Worker::getTime(const char * format)$/;"	f	class:Worker	signature:(const char * format)
-getTime	worker.h	/^        string getTime(const char * format);$/;"	p	class:Worker	access:public	signature:(const char * format)
-i	testWorker.cpp	/^            ss << j << i;$/;"	l
-i	watcher.cpp	/^    int length, i = 0, n = 0, fd;$/;"	l
-i	worker.cpp	/^    vector<pooldir_t>::iterator i;$/;"	l
-ip	worker.cpp	/^    vector<pooldir_t>::iterator ip;$/;"	l
-ipf	worker.cpp	/^    vector<pooldir_t>::iterator ipf;$/;"	l
-islink	testWorker.cpp	/^    string islink = "\/home\/jos\/tmp\/islink";$/;"	l
-it	watcher.cpp	/^    vector<flexdir_t>::iterator it;$/;"	l
-it	worker.cpp	/^    vector<flexdir_t>::iterator it;$/;"	l
-iter	testWorker.cpp	/^    vector<pooldir_t>::iterator iter;$/;"	l
-iter	worker.cpp	/^    vector<pooldir_t>::iterator iter;$/;"	l
-ix	worker.cpp	/^    vector<flexdir_t>::iterator ix;$/;"	l
-ixf	worker.cpp	/^    vector<flexdir_t>::iterator ixf;$/;"	l
-key	worker.cpp	/^            string key, value;$/;"	l
-la	worker.cpp	/^                stringstream la, mla, mls;$/;"	l
-lavg	worker.cpp	/^                la << lavg;$/;"	l
-lavg	worker.cpp	/^            double lavg = getLoadAverage();$/;"	l
-len	worker.cpp	/^        int len = fpath.length();$/;"	l
-length	watcher.cpp	/^    int length, i = 0, n = 0, fd;$/;"	l
-line	worker.cpp	/^        string line;$/;"	l
-lineNo	worker.cpp	/^        size_t lineNo = 0;$/;"	l
-linktst	testWorker.cpp	/^void linktst(string testlink)$/;"	f	signature:(string testlink)
-linktst	testWorker.cpp	/^void linktst(string testlink);$/;"	p	file:	signature:(string testlink)
-loadFileStructure	worker.cpp	/^void Worker::loadFileStructure()$/;"	f	class:Worker	signature:()
-loadFileStructure	worker.h	/^        void loadFileStructure();$/;"	p	class:Worker	access:private	signature:()
-loadFlexFiles	worker.cpp	/^void Worker::loadFlexFiles()$/;"	f	class:Worker	signature:()
-loadFlexFiles	worker.h	/^        void loadFlexFiles();$/;"	p	class:Worker	access:private	signature:()
-loadPoolFiles	worker.cpp	/^void Worker::loadPoolFiles()$/;"	f	class:Worker	signature:()
-loadPoolFiles	worker.h	/^        void loadPoolFiles();$/;"	p	class:Worker	access:private	signature:()
-loadSettings	worker.cpp	/^void Worker::loadSettings()$/;"	f	class:Worker	signature:()
-loadSettings	worker.h	/^        void loadSettings();$/;"	p	class:Worker	access:private	signature:()
-loadavg	worker.cpp	/^    double loadavg = -1;$/;"	l
-loadavg	worker.cpp	/^    la >> loadavg;$/;"	l
-log	worker.cpp	/^    fstream log;$/;"	l
-logEntry	worker.cpp	/^    string path, logEntry;$/;"	l
-logFile	worker.h	/^        string logFile;$/;"	m	class:Worker	access:private
-main	flexdir.cpp	/^int main()$/;"	f	signature:()
-main	flexdird.cpp	/^int main()$/;"	f	signature:()
-main	testWorker.cpp	/^int main()$/;"	f	signature:()
-maxLoadAverage	worker.h	/^    double maxLoadAverage;$/;"	m	struct:settings_t	access:public
-maxLoadSleep	worker.h	/^    int maxLoadSleep;$/;"	m	struct:settings_t	access:public
-maxWorkerThreads	worker.h	/^    int maxWorkerThreads;$/;"	m	struct:settings_t	access:public
-mla	worker.cpp	/^                stringstream la, mla, mls;$/;"	l
-mls	worker.cpp	/^                stringstream la, mla, mls;$/;"	l
+freeMB	worker.h	/^    long freeMB;$/;"	m	struct:pooldir_t
+from	worker.h	/^    string from;$/;"	m	struct:task_t
+getFileExists	worker.cpp	/^bool Worker::getFileExists(const char * path)$/;"	f	class:Worker
+getFlexStructFromPath	worker.cpp	/^int Worker::getFlexStructFromPath(flexdir_t * flexdir, flexfile_t * flexfile, string path)$/;"	f	class:Worker
+getIsLink	worker.cpp	/^bool Worker::getIsLink(char * path)$/;"	f	class:Worker
+getLinkTarget	worker.cpp	/^string Worker::getLinkTarget(char * path)$/;"	f	class:Worker
+getLoadAverage	worker.cpp	/^double Worker::getLoadAverage()$/;"	f	class:Worker
+getNdirs	worker.cpp	/^vector<pooldir_t> Worker::getNdirs(int n)$/;"	f	class:Worker
+getPathFromWatchDescriptor	watcher.cpp	/^string Watcher::getPathFromWatchDescriptor(int wd)$/;"	f	class:Watcher
+getPoolFiles	worker.cpp	/^vector<poolfile_t> Worker::getPoolFiles(flexfile_t * flexfile)$/;"	f	class:Worker
+getPoolSizes	worker.cpp	/^void Worker::getPoolSizes()$/;"	f	class:Worker
+getPoolStructFromPath	worker.cpp	/^int Worker::getPoolStructFromPath(pooldir_t * pooldir, poolfile_t * poolfile, string path)$/;"	f	class:Worker
+getSettings	worker.cpp	/^settings_t * Worker::getSettings()$/;"	f	class:Worker
+getTime	worker.cpp	/^string Worker::getTime(const char * format)$/;"	f	class:Worker
+linktst	testWorker.cpp	/^void linktst(string testlink)$/;"	f
+loadFileStructure	worker.cpp	/^void Worker::loadFileStructure()$/;"	f	class:Worker
+loadFlexFiles	worker.cpp	/^void Worker::loadFlexFiles()$/;"	f	class:Worker
+loadPoolFiles	worker.cpp	/^void Worker::loadPoolFiles()$/;"	f	class:Worker
+loadSettings	worker.cpp	/^void Worker::loadSettings()$/;"	f	class:Worker
+logFile	worker.h	/^        string logFile;$/;"	m	class:Worker
+main	flexdir.cpp	/^int main()$/;"	f
+main	flexdird.cpp	/^int main()$/;"	f
+main	testWatcher.cpp	/^int main()$/;"	f
+main	testWorker.cpp	/^int main()$/;"	f
+maxLoadAverage	worker.h	/^    double maxLoadAverage;$/;"	m	struct:settings_t
+maxLoadSleep	worker.h	/^    int maxLoadSleep;$/;"	m	struct:settings_t
+maxWorkerThreads	worker.h	/^    int maxWorkerThreads;$/;"	m	struct:settings_t
+mutex	checker.h	/^        pthread_mutex_t * mutex;$/;"	m	class:Checker
 mutex	flexdird.cpp	/^pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;$/;"	v
+mutex	testWatcher.cpp	/^pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;$/;"	v
 mutex	testWorker.cpp	/^pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;$/;"	v
-n	watcher.cpp	/^    int length, i = 0, n = 0, fd;$/;"	l
+mutex	watcher.h	/^        pthread_mutex_t * mutex;$/;"	m	class:Watcher
 naam	makefile	/^naam = flexdir$/;"	m
-name	worker.h	/^    string name;$/;"	m	struct:flexfile_t	access:public
-name	worker.h	/^    string name;$/;"	m	struct:poolfile_t	access:public
-ndirtest	testWorker.cpp	/^void ndirtest()$/;"	f	signature:()
-ndirtest	testWorker.cpp	/^void ndirtest();$/;"	p	file:	signature:()
-next	watcher.cpp	/^            struct inotify_event * next = (struct inotify_event *) &buffer[n];$/;"	l
-nothing	testWorker.cpp	/^    string nothing= "\/home\/jos\/tmp\/doesntexist";$/;"	l
-open	worker.cpp	/^    file.open(SETTINGS);$/;"	p	file:	signature:(SETTINGS)
-open	worker.cpp	/^    log.open(DEF_LOGFILE, fstream::in | fstream::out | fstream::app);$/;"	p	file:	signature:(DEF_LOGFILE, fstream::in | fstream::out | fstream::app)
-p_path	worker.h	/^    string p_path;$/;"	m	struct:poolfile_t	access:public
-pad	worker.cpp	/^            string pad = ip->path + "\/" + ix->path;$/;"	l
-path	worker.cpp	/^    string path, logEntry;$/;"	l
-path	worker.h	/^    string path;$/;"	m	struct:flexdir_t	access:public
-path	worker.h	/^    string path;$/;"	m	struct:pooldir_t	access:public
-pathError	worker.cpp	/^                bool pathError = false;$/;"	l
-pd	testWorker.cpp	/^    pooldir_t pd;$/;"	l
-pd	worker.cpp	/^    pooldir_t pd;$/;"	l
-pf	testWorker.cpp	/^    poolfile_t pf;$/;"	l
-pf	worker.cpp	/^            poolfile_t pf;$/;"	l
-pf	worker.cpp	/^    poolfile_t pf;$/;"	l
-pf	worker.cpp	/^    vector<poolfile_t>::iterator pf;$/;"	l
-pfit	worker.cpp	/^    vector<poolfile_t>::iterator pfit;$/;"	l
-pid	flexdird.cpp	/^    pid_t pid, sid;$/;"	l
-pit	worker.cpp	/^    vector<pooldir_t>::iterator pit;$/;"	l
-pooldirSort	worker.cpp	/^bool pooldirSort(pooldir_t d1, pooldir_t d2)$/;"	f	signature:(pooldir_t d1, pooldir_t d2)
-pooldirSort	worker.h	/^bool pooldirSort(pooldir_t d1, pooldir_t d2);$/;"	p	signature:(pooldir_t d1, pooldir_t d2)
+name	worker.h	/^    string name;$/;"	m	struct:flexfile_t
+name	worker.h	/^    string name;$/;"	m	struct:poolfile_t
+ndirtest	testWorker.cpp	/^void ndirtest()$/;"	f
+p_path	worker.h	/^    string p_path;$/;"	m	struct:poolfile_t
+path	worker.h	/^    string path;$/;"	m	struct:flexdir_t
+path	worker.h	/^    string path;$/;"	m	struct:pooldir_t
+pooldirSort	worker.cpp	/^bool pooldirSort(pooldir_t d1, pooldir_t d2)$/;"	f
 pooldir_t	worker.h	/^struct pooldir_t$/;"	s
-pooldir_t::files	worker.h	/^    vector<poolfile_t> files;$/;"	m	struct:pooldir_t	access:public
-pooldir_t::freeMB	worker.h	/^    long freeMB;$/;"	m	struct:pooldir_t	access:public
-pooldir_t::path	worker.h	/^    string path;$/;"	m	struct:pooldir_t	access:public
-pooldir_t::sizeMB	worker.h	/^    long sizeMB;$/;"	m	struct:pooldir_t	access:public
-pooldir_t::usedPerc	worker.h	/^    double usedPerc;$/;"	m	struct:pooldir_t	access:public
-pooldirs	worker.h	/^    vector<pooldir_t> pooldirs;$/;"	m	struct:settings_t	access:public
+pooldirs	worker.h	/^    vector<pooldir_t> pooldirs;$/;"	m	struct:settings_t
 poolfile_t	worker.h	/^struct poolfile_t$/;"	s
-poolfile_t::name	worker.h	/^    string name;$/;"	m	struct:poolfile_t	access:public
-poolfile_t::p_path	worker.h	/^    string p_path;$/;"	m	struct:poolfile_t	access:public
-poolfile_t::role	worker.h	/^    role_t role;$/;"	m	struct:poolfile_t	access:public
-poolfile_t::x_path	worker.h	/^    string x_path;$/;"	m	struct:poolfile_t	access:public
-poolfiles	worker.cpp	/^    vector<poolfile_t> poolfiles;$/;"	l
-pop	worker.cpp	/^            settings.tasks.pop();$/;"	p	file:	signature:()
-ppath	worker.cpp	/^    string ppath;$/;"	l
-printFileStructure	testWorker.cpp	/^    w.printFileStructure();$/;"	p	file:	signature:()
-printFileStructure	worker.cpp	/^void Worker::printFileStructure()$/;"	f	class:Worker	signature:()
-printFileStructure	worker.h	/^        void printFileStructure();$/;"	p	class:Worker	access:public	signature:()
-printSettings	testWorker.cpp	/^    w.printSettings();    $/;"	p	file:	signature:()
-printSettings	worker.cpp	/^void Worker::printSettings()$/;"	f	class:Worker	signature:()
-printSettings	worker.h	/^        void printSettings();$/;"	p	class:Worker	access:public	signature:()
-push	worker.cpp	/^    settings.tasks.push(task);$/;"	p	file:	signature:(task)
-push_back	worker.cpp	/^                            ip->files.push_back(f);$/;"	p	file:	signature:(f)
-push_back	worker.cpp	/^                    ix->files.push_back(f);$/;"	p	file:	signature:(f)
-push_back	worker.cpp	/^                    settings.flexdirs.push_back(f);$/;"	p	file:	signature:(f)
-push_back	worker.cpp	/^                    settings.pooldirs.push_back(f);$/;"	p	file:	signature:(f)
-push_back	worker.cpp	/^            files.push_back(pf);$/;"	p	file:	signature:(pf)
-rawtime	worker.cpp	/^    time_t rawtime;$/;"	l
-renameError	worker.cpp	/^                    bool renameError = false;$/;"	l
-rest	worker.cpp	/^            string rest = path.substr(len);$/;"	l
-ret	worker.cpp	/^    int ret = 0;$/;"	l
-ret	worker.cpp	/^    string ret(buffer);$/;"	p	file:	signature:(buffer)
-ret	worker.cpp	/^    vector<pooldir_t> ret;$/;"	l
-retc	flexdird.cpp	/^    int retw, retc;$/;"	l
-retw	flexdird.cpp	/^    int retw, retc;$/;"	l
-retw	testWorker.cpp	/^    int retw;$/;"	l
-role	worker.h	/^    role_t role;$/;"	m	struct:flexfile_t	access:public
-role	worker.h	/^    role_t role;$/;"	m	struct:poolfile_t	access:public
+printFileStructure	worker.cpp	/^void Worker::printFileStructure()$/;"	f	class:Worker
+printSettings	worker.cpp	/^void Worker::printSettings()$/;"	f	class:Worker
+role	worker.h	/^    role_t role;$/;"	m	struct:flexfile_t
+role	worker.h	/^    role_t role;$/;"	m	struct:poolfile_t
 role_t	worker.h	/^enum role_t { NONE, FLEXFILE, NEW, PRIMARY, SECONDARY, ORPHAN, COPIES };$/;"	g
 s	testWorker.cpp	/^settings_t * s;$/;"	v
-s	watcher.cpp	/^    settings_t * s = worker->getSettings();$/;"	l
-sb	worker.cpp	/^    struct stat sb;$/;"	l
-sepPos	worker.cpp	/^            size_t sepPos = temp.find('=');$/;"	l
-settings	worker.h	/^        settings_t settings;$/;"	m	class:Worker	access:private
-settingsValidLine	worker.cpp	/^bool Worker::settingsValidLine(const string &line) const$/;"	f	class:Worker	signature:(const string &line) const
-settingsValidLine	worker.h	/^        bool settingsValidLine(const string &line) const;$/;"	p	class:Worker	access:private	signature:(const string &line) const
+settings	worker.h	/^        settings_t settings;$/;"	m	class:Worker
+settingsValidLine	worker.cpp	/^bool Worker::settingsValidLine(const string &line) const$/;"	f	class:Worker
 settings_t	worker.h	/^struct settings_t $/;"	s
-settings_t::flexdirs	worker.h	/^    vector<flexdir_t> flexdirs;$/;"	m	struct:settings_t	access:public
-settings_t::maxLoadAverage	worker.h	/^    double maxLoadAverage;$/;"	m	struct:settings_t	access:public
-settings_t::maxLoadSleep	worker.h	/^    int maxLoadSleep;$/;"	m	struct:settings_t	access:public
-settings_t::maxWorkerThreads	worker.h	/^    int maxWorkerThreads;$/;"	m	struct:settings_t	access:public
-settings_t::pooldirs	worker.h	/^    vector<pooldir_t> pooldirs;$/;"	m	struct:settings_t	access:public
-settings_t::tasks	worker.h	/^    queue<task_t> tasks;$/;"	m	struct:settings_t	access:public
-settings_t::verbose	worker.h	/^    bool verbose;$/;"	m	struct:settings_t	access:public
-sid	flexdird.cpp	/^    pid_t pid, sid;$/;"	l
-size	worker.cpp	/^        str << settings.tasks.size();$/;"	p	file:	signature:()
-sizeMB	worker.h	/^    long sizeMB;$/;"	m	struct:pooldir_t	access:public
-sn	worker.cpp	/^    stringstream ss, sn;$/;"	l
-ss	testWorker.cpp	/^            stringstream ss;$/;"	l
-ss	worker.cpp	/^    stringstream ss, sn;$/;"	l
-st	worker.cpp	/^    struct stat st;$/;"	l
-start	checker.cpp	/^void Checker::start()$/;"	f	class:Checker	signature:()
-start	checker.h	/^        void start();$/;"	p	class:Checker	access:public	signature:()
-start	flexdird.cpp	/^    ch.start();$/;"	p	file:	signature:()
-start	flexdird.cpp	/^    wa.start();   $/;"	p	file:	signature:()
-start	watcher.cpp	/^void Watcher::start()$/;"	f	class:Watcher	signature:()
-start	watcher.h	/^        void start();$/;"	p	class:Watcher	access:public	signature:()
-startDaemon	flexdird.cpp	/^void startDaemon()$/;"	f	signature:()
-startDaemon	flexdird.cpp	/^void startDaemon();$/;"	p	file:	signature:()
-startThreads	flexdird.cpp	/^void startThreads()$/;"	f	signature:()
-startThreads	flexdird.cpp	/^void startThreads();$/;"	p	file:	signature:()
-startThreads	testWorker.cpp	/^void startThreads()$/;"	f	signature:()
-startThreads	testWorker.cpp	/^void startThreads();$/;"	p	file:	signature:()
-startWorker	worker.cpp	/^void Worker::startWorker(pthread_mutex_t * mutex, pthread_cond_t * condition)$/;"	f	class:Worker	signature:(pthread_mutex_t * mutex, pthread_cond_t * condition)
-startWorker	worker.h	/^        void startWorker(pthread_mutex_t * mutex, pthread_cond_t * condition);$/;"	p	class:Worker	access:public	signature:(pthread_mutex_t * mutex, pthread_cond_t * condition)
-stop	worker.cpp	/^    bool stop = false;$/;"	l
-str	worker.cpp	/^                    istringstream str(value.substr(value.find_last_of(' ') + 1));$/;"	p	file:	signature:(value.substr(value.find_last_of(Ã) + 1))
-str	worker.cpp	/^                istringstream str(value);$/;"	p	file:	signature:(value)
-str	worker.cpp	/^        stringstream str;$/;"	l
-symlinkTest	testWorker.cpp	/^void symlinkTest();$/;"	p	file:	signature:()
-symlinkTest	testWorker.cpp	/^void symlinkTest(){$/;"	f	signature:()
-t	testWorker.cpp	/^    task_t t;$/;"	l
-target	worker.cpp	/^                            string target = dirs.begin()->path + fd.path + "\/" +ff.name;$/;"	l
-task	worker.cpp	/^            task_t task = settings.tasks.front();$/;"	l
-task	worker.cpp	/^    task_t task;$/;"	l
+sizeMB	worker.h	/^    long sizeMB;$/;"	m	struct:pooldir_t
+start	checker.cpp	/^void Checker::start(pthread_mutex_t * m, pthread_cond_t * c)$/;"	f	class:Checker
+start	watcher.cpp	/^void Watcher::start(pthread_mutex_t * m, pthread_cond_t * c)$/;"	f	class:Watcher
+startDaemon	flexdird.cpp	/^void startDaemon()$/;"	f
+startThreads	flexdird.cpp	/^void startThreads()$/;"	f
+startThreads	testWatcher.cpp	/^void startThreads()$/;"	f
+startThreads	testWorker.cpp	/^void startThreads()$/;"	f
+startWorker	worker.cpp	/^void Worker::startWorker(pthread_mutex_t * mutex, pthread_cond_t * condition)$/;"	f	class:Worker
+symlinkTest	testWorker.cpp	/^void symlinkTest(){$/;"	f
 taskID_t	worker.h	/^enum taskID_t { ADD, SYNC, DELETE, REMOVE, RENAME };$/;"	g
 task_t	worker.h	/^struct task_t$/;"	s
-task_t::ID	worker.h	/^    taskID_t ID;$/;"	m	struct:task_t	access:public
-task_t::from	worker.h	/^    string from;$/;"	m	struct:task_t	access:public
-task_t::to	worker.h	/^    string to;$/;"	m	struct:task_t	access:public
-tasks	worker.h	/^    queue<task_t> tasks;$/;"	m	struct:settings_t	access:public
-teller	worker.cpp	/^    int teller = 0;$/;"	l
-temp	worker.cpp	/^            string temp = line;$/;"	l
-temp	worker.cpp	/^    string temp = line;$/;"	l
-testFunctions	testWorker.cpp	/^void testFunctions()$/;"	f	signature:()
-testFunctions	testWorker.cpp	/^void testFunctions();$/;"	p	file:	signature:()
-testTasks	testWorker.cpp	/^void testTasks()$/;"	f	signature:()
-testTasks	testWorker.cpp	/^void testTasks();$/;"	p	file:	signature:()
-testlink	testWorker.cpp	/^    cout <<testlink << ": ";$/;"	l
-testlink	testWorker.cpp	/^    string testlink = "\/home\/jos\/tmp\/testlink";$/;"	l
-timeinfo	worker.cpp	/^    struct tm * timeinfo;$/;"	l
-to	worker.cpp	/^                        string to = toPath + "\/" + ff.name;$/;"	l
-to	worker.h	/^    string to;$/;"	m	struct:task_t	access:public
-toPath	worker.cpp	/^                        string toPath = pit->path + fd.path;$/;"	l
-toPath	worker.cpp	/^                    string fromPath, toPath;$/;"	l
-usedPerc	worker.h	/^    double usedPerc;$/;"	m	struct:pooldir_t	access:public
-value	worker.cpp	/^            string key, value;$/;"	l
-verbose	worker.h	/^    bool verbose;$/;"	m	struct:settings_t	access:public
+tasks	worker.h	/^    queue<task_t> tasks;$/;"	m	struct:settings_t
+testFunctions	testWorker.cpp	/^void testFunctions()$/;"	f
+testTasks	testWorker.cpp	/^void testTasks()$/;"	f
+testWatcher	testWatcher.cpp	/^void testWatcher()$/;"	f
+to	worker.h	/^    string to;$/;"	m	struct:task_t
+usedPerc	worker.h	/^    double usedPerc;$/;"	m	struct:pooldir_t
+verbose	worker.h	/^    bool verbose;$/;"	m	struct:settings_t
 w	flexdir.cpp	/^Checker ch(&w);$/;"	v
 w	flexdird.cpp	/^Checker ch(&w);$/;"	v
 w	flexdird.cpp	/^Watcher wa(&w);$/;"	v
 w	flexdird.cpp	/^Worker w;$/;"	v
-w	testWorker.cpp	/^    w.actionChangeLink((char*)"\/home\/jos\/tmp\/testlink", (char*)"\/home\/jos\/tmp\/copiedTest.txt");$/;"	p	file:	signature:(char*)Ó, (char*)Ó
-w	testWorker.cpp	/^    w.actionCopyFile((char*)"\/home\/jos\/tmp\/movedTest.txt", (char*)"\/home\/jos\/tmp\/copiedTest.txt");$/;"	p	file:	signature:(char*)Ó, (char*)Ó
-w	testWorker.cpp	/^    w.actionCreateLink((char*)"\/home\/jos\/tmp\/movedTest.txt", (char*)"\/home\/jos\/tmp\/testlink");$/;"	p	file:	signature:(char*)Ó, (char*)Ó
-w	testWorker.cpp	/^    w.actionCreatedir((char*)"\/home\/jos\/pool2\/home\/jos\/tmp");$/;"	p	file:	signature:(char*)Ó
-w	testWorker.cpp	/^    w.actionDeleteFile((char*)"\/home\/jos\/tmp\/movedTest.txt");$/;"	p	file:	signature:(char*)Ó
-w	testWorker.cpp	/^    w.actionMoveFile((char*)"\/home\/jos\/tmp\/testcopy.txt", (char*)"\/home\/jos\/tmp\/movedTest.txt");$/;"	p	file:	signature:(char*)Ó, (char*)Ó
-w1	watcher.cpp	/^    int w1,w2; \/\/TODO: use array of dirs from config file$/;"	l
-w2	watcher.cpp	/^    int w1,w2; \/\/TODO: use array of dirs from config file$/;"	l
-wThread	testWorker.cpp	/^void * wThread(void * id)$/;"	f	signature:(void * id)
-wThread	testWorker.cpp	/^void * wThread(void * id);$/;"	p	file:	signature:(void * id)
-watchdescriptor	worker.h	/^    int watchdescriptor;$/;"	m	struct:flexdir_t	access:public
-watcherThread	flexdird.cpp	/^void * watcherThread(void * id)$/;"	f	signature:(void * id)
-watcherThread	flexdird.cpp	/^void * watcherThread(void * id);$/;"	p	file:	signature:(void * id)
-wo	testWorker.cpp	/^    Worker wo = w;$/;"	l
-worker	checker.h	/^        Worker * worker;$/;"	m	class:Checker	access:private
-worker	watcher.h	/^        Worker * worker;$/;"	m	class:Watcher	access:private
-workerThread	flexdird.cpp	/^void * workerThread(void * id)$/;"	f	signature:(void * id)
-working	worker.h	/^        bool working;$/;"	m	class:Worker	access:private
-writeLog	worker.cpp	/^void Worker::writeLog(string txt)$/;"	f	class:Worker	signature:(string txt)
-writeLog	worker.h	/^        void writeLog(string txt);$/;"	p	class:Worker	access:public	signature:(string txt)
-wt	flexdird.cpp	/^    pthread_t wt, ct;$/;"	l
-wt	testWorker.cpp	/^    pthread_t wt;$/;"	l
-x_path	worker.h	/^    string x_path;$/;"	m	struct:flexfile_t	access:public
-x_path	worker.h	/^    string x_path;$/;"	m	struct:poolfile_t	access:public
-xf	worker.cpp	/^    vector<flexfile_t>::iterator xf;$/;"	l
-~Checker	checker.cpp	/^Checker::~Checker()$/;"	f	class:Checker	signature:()
-~Checker	checker.h	/^        ~Checker();$/;"	p	class:Checker	access:public	signature:()
-~Watcher	watcher.cpp	/^Watcher::~Watcher()$/;"	f	class:Watcher	signature:()
-~Watcher	watcher.h	/^        ~Watcher();$/;"	p	class:Watcher	access:public	signature:()
-~Worker	worker.cpp	/^Worker::~Worker()$/;"	f	class:Worker	signature:()
-~Worker	worker.h	/^        ~Worker();$/;"	p	class:Worker	access:public	signature:()
+w	testWatcher.cpp	/^Watcher wa(&w);$/;"	v
+w	testWatcher.cpp	/^Worker w;$/;"	v
+wThread	testWorker.cpp	/^void * wThread(void * id)$/;"	f
+watchdescriptor	worker.h	/^    int watchdescriptor;$/;"	m	struct:flexdir_t
+watcherThread	flexdird.cpp	/^void * watcherThread(void * id)$/;"	f
+watcherThread	testWatcher.cpp	/^void * watcherThread(void * id)$/;"	f
+worker	checker.h	/^        Worker * worker;$/;"	m	class:Checker
+worker	watcher.h	/^        Worker * worker;$/;"	m	class:Watcher
+workerThread	flexdird.cpp	/^void * workerThread(void * id)$/;"	f
+workerThread	testWatcher.cpp	/^void * workerThread(void * id)$/;"	f
+working	worker.h	/^        bool working;$/;"	m	class:Worker
+writeLog	worker.cpp	/^void Worker::writeLog(string txt)$/;"	f	class:Worker
+x_path	worker.h	/^    string x_path;$/;"	m	struct:flexfile_t
+x_path	worker.h	/^    string x_path;$/;"	m	struct:poolfile_t
+~Checker	checker.cpp	/^Checker::~Checker()$/;"	f	class:Checker
+~Watcher	watcher.cpp	/^Watcher::~Watcher()$/;"	f	class:Watcher
+~Worker	worker.cpp	/^Worker::~Worker()$/;"	f	class:Worker

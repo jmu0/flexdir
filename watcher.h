@@ -13,6 +13,7 @@ class Watcher
         Worker * worker;
         pthread_mutex_t * mutex;
         pthread_cond_t * condition;
+        string getPathFromWatchDescriptor(int wd);
     public:
         Watcher(Worker * w);
         ~Watcher();

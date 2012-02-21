@@ -1,5 +1,5 @@
 naam = flexdir
-daemon = testWatcher
+daemon = flexdird
 cli = flexdir
 dirInstall = /usr/local/bin
 dirConfig = /etc
@@ -10,10 +10,10 @@ main : $(daemon).o $(cli).o worker.o watcher.o checker.o
 	g++ $(daemon).o worker.o watcher.o checker.o -lpthread -o $(daemon); g++ $(cli).o worker.o checker.o -o $(cli)
 
 $(daemon).o : $(daemon).cpp
-	g++ -c $(daemon).cpp -lpthread
+	g++ -c flexdird.cpp -lpthread
 
 $(cli).o : $(cli).cpp
-	g++ -c $(cli).cpp
+	g++ -c flexdir.cpp
 
 worker.o : worker.cpp
 	g++ -c worker.cpp -lpthread

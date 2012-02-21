@@ -51,6 +51,7 @@ void Worker::loadSettings()
     settings.maxLoadSleep = MAX_LOAD_SLEEP;
     settings.maxWorkerThreads = MAX_WORKER_THREADS;
     settings.verbose = VERBOSE;
+    settings.deleteWaitFlag = false;
     //load settings file
     ifstream file;
     file.open(SETTINGS);
@@ -539,6 +540,47 @@ int Worker::actionCreatedir(char * path)
     return system((char*)cmd.c_str());
 }
 
+int Worker::actionRemovePoolFile(char * path)
+{
+    pooldir_t pd;
+    poolfile_t pf;
+    //get pooldir/file structures from path <from>
+    if(getPoolStructFromPath(&pd, &pf, path) == 0)
+    {
+        //check for .deleted dir, create if needed
+        bool pathError = false;
+        string delPath = pd.path + "/.deleted" + pf.x_path;
+        if (getFileExists((char*)delPath.c_str()) == false)
+        {
+            if(actionCreatedir((char*)delPath.c_str()) != 0)
+            {
+                pathError = true;
+            }
+        }
+        if (pathError == false)
+        {
+            //move file to .deleted dir in pooldir root
+            delPath += "/" + pf.name;
+            if (actionMoveFile(path, (char*)delPath.c_str()) == 0)
+            {
+                return 0;
+            }
+            else
+            {
+                return -1;
+            }
+        }
+        else
+        {
+            return -1;
+        }
+    }
+    else
+    {
+        return -1;
+    }
+}
+
 void Worker::startWorker(pthread_mutex_t * mutex, pthread_cond_t * condition)
 {
     bool stop = false;
@@ -547,7 +589,7 @@ void Worker::startWorker(pthread_mutex_t * mutex, pthread_cond_t * condition)
         pthread_mutex_lock(mutex);
         if (settings.tasks.size() == 0)
         {
-            writeLog("WORKER: waiting...");
+            //DEBUG: writeLog("WORKER: waiting...");
             pthread_cond_wait(condition, mutex);
         }
         pthread_mutex_unlock(mutex);
@@ -587,8 +629,6 @@ int Worker::doTask(task_t * task)
 {
     flexdir_t fd;
     flexfile_t ff;
-    pooldir_t pd;
-    poolfile_t pf;
     vector<pooldir_t>::iterator pit;
     vector<pooldir_t> dirs; 
     vector<poolfile_t> poolfiles;
@@ -630,6 +670,7 @@ int Worker::doTask(task_t * task)
                     if (copyError == false)
                     {
                         //remove file / create link
+                        settings.deleteWaitFlag = true; //set flag, prevents trigger delete task by watcher
                         if (actionDeleteFile((char*)task->from.c_str()) == 0)
                         {
                             string target = dirs.begin()->path + fd.path + "/" +ff.name;
@@ -642,6 +683,7 @@ int Worker::doTask(task_t * task)
                                 logEntry += "FAILED could not create symlink ";
                             }
                         }
+                        settings.deleteWaitFlag = false;
                     }
                     else
                     {
@@ -682,45 +724,45 @@ int Worker::doTask(task_t * task)
                 logEntry += "OK ";
             }
             break;
-        case REMOVE:
+        case REMOVE: //remove all poolfiles for given flexfile <from>
             logEntry += "REMOVE task: ";
-            //get pooldir/file structures from path <from>
-            if(getPoolStructFromPath(&pd, &pf, task->from) == 0)
+            //find all files in pool
+            if (getFlexStructFromPath(&fd, &ff, task->from) == 0)
             {
-                //check for .deleted dir, create if needed
-                bool pathError = false;
-                string delPath = pd.path + "/.deleted" + pf.x_path;
-                if (getFileExists((char*)delPath.c_str()) == false)
+                poolfiles = getPoolFiles(&ff);
+                if (poolfiles.size() > 0)
                 {
-                    if(actionCreatedir((char*)delPath.c_str()) != 0)
+                    //remove files in pool to .deleted 
+                    bool removeError = false;
+                    string path;
+                    for (pfit = poolfiles.begin(); pfit != poolfiles.end(); pfit++)
                     {
-                        pathError = true;
+                        path = pfit->p_path + task->from;
+                        if (actionRemovePoolFile((char*)path.c_str()) != 0)
+                        {
+                            removeError = true;
+                        }
                     }
-                }
-                if (pathError == false)
-                {
-                    //move file to .deleted dir in pooldir root
-                    delPath += "/" + pf.name;
-                    if (actionMoveFile((char*)task->from.c_str(), (char*)delPath.c_str()) == 0)
+                    if (removeError == false)
                     {
                         logEntry += "OK ";
                     }
                     else
                     {
-                        logEntry += "FAILED could not move file ";
+                        logEntry += "FAILED error removing poolfiles ";
                     }
                 }
                 else
                 {
-                    logEntry += "FAILED could not create .deleted ";
+                    logEntry += "FAILED no poolfiles found ";
                 }
             }
             else
             {
-                logEntry += "FAILED could not get pooldir structure ";
+                logEntry += "FAILED could not get flexdir structure ";
             }
             break;
-        case RENAME:
+        case RENAME: //rename all poolfiles for given flexfile and update link target
             logEntry += "RENAME task: ";
             //find all files in pool
             if (getFlexStructFromPath(&fd, &ff, task->from) == 0)
@@ -743,6 +785,7 @@ int Worker::doTask(task_t * task)
                     //change link target 
                     if (renameError == false)
                     {
+                        settings.deleteWaitFlag = true;
                         if (actionChangeLink((char*)task->to.c_str(), (char*)toPath.c_str()) == 0)
                         {
                             logEntry += "OK ";
@@ -751,6 +794,7 @@ int Worker::doTask(task_t * task)
                         {
                             logEntry += "FAILED could not change link target ";
                         }
+                        settings.deleteWaitFlag = false;
                     }
                     else
                     {

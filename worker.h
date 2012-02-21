@@ -61,6 +61,7 @@ struct settings_t
     double maxLoadAverage;
     int maxLoadSleep;
     bool verbose;
+    bool deleteWaitFlag;
 };
 
 
@@ -97,6 +98,7 @@ class Worker
         int actionCreateLink(char * target, char * linkname);
         int actionChangeLink(char * link, char * newTarget);
         int actionCreatedir(char * path);
+        int actionRemovePoolFile(char * path);
         void startWorker(pthread_mutex_t * mutex, pthread_cond_t * condition);
         int addTask(taskID_t ID, string from, string to);
         int doTask(task_t * task);
