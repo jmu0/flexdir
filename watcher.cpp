@@ -4,6 +4,7 @@
 #include <sys/inotify.h>
 #include <cstdlib>
 #include <string>
+#include <pthread.h>
 #include <vector>
 
 using namespace std;
@@ -14,14 +15,14 @@ using namespace std;
 Watcher::Watcher(Worker * w)
 {
     worker = w;
-    worker->writeLog("Watcher constructor");
 }
 Watcher::~Watcher()
 {
-    worker->writeLog("Watcher deconstructor");
 }
-void Watcher::start()
+void Watcher::start(pthread_mutex_t * m, pthread_cond_t * c)
 {
+    mutex = m;
+    condition = c;
     //setup watches
     int length, i = 0, n = 0, fd;
     char buffer[EVENT_BUF_LEN];

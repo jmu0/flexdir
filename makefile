@@ -1,12 +1,13 @@
 naam = flexdir
 daemon = flexdird
 cli = flexdir
+dirInstall = /usr/local/bin
+dirConfig = /etc
+dirInit = /etc/rc.d
+dirLog = /var/log
 
-$(daemon): $(daemon).o worker.o watcher.o checker.o
-	g++ $(daemon).o worker.o watcher.o checker.o -lpthread -o $(daemon)
-
-$(cli) : $(cli).o worker.o checker.o
-	g++ $(cli).o worker.o checker.o -o $(cli)
+main : $(daemon).o $(cli).o worker.o watcher.o checker.o
+	g++ $(daemon).o worker.o watcher.o checker.o -lpthread -o $(daemon); g++ $(cli).o worker.o checker.o -o $(cli)
 
 $(daemon).o : $(daemon).cpp
 	g++ -c flexdird.cpp -lpthread
@@ -27,10 +28,11 @@ clean:
 	rm -rf *.o $(cli) $(daemon) $(cli).log
 
 install: 
-	install $(daemon) /usr/local/bin
-	install $(cli) /usr/local/bin
-	install initscript /etc/rc.d/$(daemon)
+	install $(daemon) $(dirInstall)
+	install $(cli) $(dirInstall)
+	install $(cli).conf $(dirConfig)
+	install initscript $(dirInit)/$(daemon)
 
 uninstall: 
-	rm /usr/local/bin/$(cli) /usr/local/bin/$(daemon) /etc/rc.d/$(daemon)
+	rm $(dirInstall)/$(cli) $(dirInstall)/$(daemon) $(dirInit)/$(daemon) $(dirConfig)/$(cli).conf
     	

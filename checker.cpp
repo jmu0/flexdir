@@ -2,24 +2,23 @@
 #include "worker.h"
 #include <iostream>
 #include <string>
-
+#include <pthread.h>
 
 using namespace std;
 
 Checker::Checker(Worker * w)
 {
     worker = w;
-    worker->writeLog("Checker constructor");
 }
 Checker::~Checker()
 {
-    worker->writeLog("Checker deconstructor");
 }
-void Checker::start()
+void Checker::start(pthread_mutex_t * m, pthread_cond_t * c)
 {
+    mutex = m;
+    condition = c;
     while(1)
     {
-//        worker->writeLog("checker thread!");
         sleep(10);
     }
 }

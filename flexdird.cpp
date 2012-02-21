@@ -13,6 +13,9 @@ void startDaemon();
 void startThreads();
 void * watcherThread(void * id);
 void * checkerThread(void * id);
+void * workerThread(void * id);
+pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+pthread_cond_t condition = PTHREAD_COND_INITIALIZER;
 
 Worker w;
 Watcher wa(&w);
@@ -61,20 +64,28 @@ void startDaemon()
 
 void startThreads()
 {
-    pthread_t wt, ct;
-    int retw, retc;
-    retw = pthread_create(&wt, NULL, watcherThread, (void *) 1);
-    retc = pthread_create(&ct, NULL, checkerThread, (void *) 2);
-    pthread_join(wt, NULL);
-    pthread_join(ct, NULL);
-
+    pthread_t wat, cht, wot;
+    int retwa, retch, retwo;
+    retwa = pthread_create(&wat, NULL, watcherThread, (void *) 1);
+    retch = pthread_create(&cht, NULL, checkerThread, (void *) 2);
+    retwo = pthread_create(&wot, NULL, workerThread, (void *) 3);
+    pthread_join(wat, NULL);
+    pthread_join(cht, NULL);
+    pthread_join(wot, NULL);
 }
+
 void * watcherThread(void * id)
 {
-    wa.start();   
+    wa.start(&mutex, &condition);   
 }
+
 void * checkerThread(void * id)
 {
-    ch.start();
+    ch.start(&mutex, &condition);
+}
+
+void * workerThread(void * id)
+{
+    w.startWorker(&mutex, &condition);    
 }
 

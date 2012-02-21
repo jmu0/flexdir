@@ -38,12 +38,10 @@ Worker::Worker()
     {
         working=false;
     }
-    writeLog("Worker constructor");
 }
 
 Worker::~Worker()
 {
-    writeLog("Worker deconstructor");
 }
 
 void Worker::loadSettings()
