@@ -40,7 +40,7 @@ void Watcher::start(pthread_mutex_t * m, pthread_cond_t * c)
     for(it = s->flexdirs.begin(); it != s->flexdirs.end(); it++)
     {
         it->watchdescriptor = inotify_add_watch(fd, (char * )it->path.c_str(), 
-            IN_CREATE | IN_DELETE | IN_MOVED_FROM | IN_MOVED_TO);
+            IN_CREATE | IN_DELETE | IN_MOVED_FROM | IN_MOVED_TO );
     }
     // watch dirs
     while(1)
@@ -90,7 +90,7 @@ void Watcher::start(pthread_mutex_t * m, pthread_cond_t * c)
                     {
                         settings_t * s = worker->getSettings();
                         while(s->deleteWaitFlag == true) 
-                        //check if wait-flag is set by worker (during ADD/RENAME action, a DELETE event occurs)
+                            //check if wait-flag is set by worker (during ADD/RENAME action, a DELETE event occurs)
                         {
                             sleep(0);
                         }
