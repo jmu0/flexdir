@@ -74,6 +74,9 @@ class Worker
         bool settingsValidLine(const string &line) const;
         void getPoolSizes();
         void loadFileStructure();
+        void loadFlexFiles();
+        void loadPoolFiles();
+        vector<poolfile_t> getPoolFiles(flexfile_t * flexfile);
     public:
         Worker();
         ~Worker();
