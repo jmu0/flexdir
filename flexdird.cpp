@@ -1,6 +1,7 @@
 #include <iostream>
 #include <cstdlib>
 #include <string>
+#include <stdio.h>
 #include <sys/stat.h>
 #include <pthread.h>
 #include "worker.h"
@@ -55,7 +56,7 @@ void startDaemon()
     }
     //standaard file descriptors sluiten
     close(STDIN_FILENO);
-    close(STDOUT_FILENO);
+    freopen ("/dev/null","w",stdout);//Can't close stdout, needed by system() calls.
     close(STDERR_FILENO);
     //start threads
     startThreads();

@@ -52,7 +52,7 @@ condition	testWatcher.cpp	/^pthread_cond_t condition = PTHREAD_COND_INITIALIZER;
 condition	testWorker.cpp	/^pthread_cond_t condition = PTHREAD_COND_INITIALIZER;$/;"	v
 condition	watcher.h	/^        pthread_cond_t * condition;$/;"	m	class:Watcher
 copies	worker.h	/^    int copies;$/;"	m	struct:flexdir_t
-daemon	makefile	/^daemon = testWatcher$/;"	m
+daemon	makefile	/^daemon = flexdird$/;"	m
 deleteWaitFlag	worker.h	/^    bool deleteWaitFlag;$/;"	m	struct:settings_t
 dirConfig	makefile	/^dirConfig = \/etc$/;"	m
 dirInit	makefile	/^dirInit = \/etc\/rc.d$/;"	m

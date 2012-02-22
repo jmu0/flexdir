@@ -1,5 +1,5 @@
 naam = flexdir
-daemon = testWatcher
+daemon = flexdird
 cli = flexdir
 dirInstall = /usr/local/bin
 dirConfig = /etc
