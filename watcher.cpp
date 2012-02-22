@@ -40,7 +40,7 @@ void Watcher::start(pthread_mutex_t * m, pthread_cond_t * c)
     for(it = s->flexdirs.begin(); it != s->flexdirs.end(); it++)
     {
         it->watchdescriptor = inotify_add_watch(fd, (char * )it->path.c_str(), 
-            IN_CREATE | IN_DELETE | IN_MOVED_FROM | IN_MOVED_TO );
+            IN_CLOSE_WRITE | IN_DELETE | IN_MOVED_FROM | IN_MOVED_TO );
     }
     // watch dirs
     while(1)
@@ -63,7 +63,8 @@ void Watcher::start(pthread_mutex_t * m, pthread_cond_t * c)
                 string fdPath = fPath + "/" + (string)event->name;
                 if (fPath != "NOT FOUND")
                 {
-                    if ((event->cookie == next->cookie) && (event->wd == next->wd)) //is rename
+                    if ((event->cookie == next->cookie) && (event->wd == next->wd)
+                            && (event->mask & IN_MOVED_FROM) && (next->mask & IN_MOVED_TO)) //is rename
                     {
                         i += EVENT_SIZE + next->len; //skip next line
                         string toPath = fPath + "/" + (string) next->name;
@@ -72,7 +73,7 @@ void Watcher::start(pthread_mutex_t * m, pthread_cond_t * c)
                         worker->addTask(RENAME, fdPath, toPath);
                         pthread_mutex_unlock(mutex);
                     }
-                    else if ((event->mask & IN_CREATE) || (event->mask & IN_MOVED_TO)) //is add
+                    else if ((event->mask & IN_CLOSE_WRITE) || (event->mask & IN_MOVED_TO)) //is add
                     {
                         if (worker->getIsLink((char*)fdPath.c_str()) == true) //symlink is created by worker during ADD-task
                         {

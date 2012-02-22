@@ -502,7 +502,7 @@ int Worker::actionDeleteFile(char * path)
 
 int Worker::actionCopyFile(char * from, char * to)//TODO: use rsync
 {
-    string com = "cp -ruf " + (string)from + " " + (string)to; 
+    string com = "cp -ruf '" + (string)from + "' '" + (string)to + "'"; 
     //TODO: find alternative for system call
     return system((char *) com.c_str());
 }
@@ -516,7 +516,7 @@ int Worker::actionSyncFile(char * from, char * to)
 
 int Worker::actionCreateLink(char * target, char * linkname)
 {
-    string com = "cp -rsf " + (string)target + " " + (string)linkname;
+    string com = "cp -rsf '" + (string)target + "' '" + (string)linkname + "'";
     //TODO: find alternative for system call
     return system((char *) com.c_str()); 
 }
@@ -535,7 +535,7 @@ int Worker::actionChangeLink(char * link, char * newTarget)
 
 int Worker::actionCreatedir(char * path)
 {
-    string cmd = "mkdir -p " + (string)path;
+    string cmd = "mkdir -p '" + (string)path + "'";
     //TODO: find alternative for system call (mkdir not recursive)
     return system((char*)cmd.c_str());
 }
