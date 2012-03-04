@@ -10,9 +10,21 @@ using namespace std;
 Worker w;
 Checker ch(&w);
 
-int main()
+int main(int argc, char * argv[])
 {
-    cout << "flexdir CLI" << endl;
+
+    Worker wo = w;//TODO: delete this line
+    for (int i = 1; i < argc; i++)
+    {
+        if ((string)argv[i] == "-s")
+        {
+            w.printSettings();
+        }
+        else if ((string)argv[i] == "-f")
+        {
+            w.printFileStructure();
+        }
+    }
     return 0;
 }
 

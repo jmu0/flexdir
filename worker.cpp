@@ -19,6 +19,9 @@
 #define MAX_LOAD_AVG 1
 #define MAX_LOAD_SLEEP 5
 #define MAX_WORKER_THREADS 5
+#define DAILY_CHECK false
+#define DAILY_CHECK_TIME "0:00"
+#define ALARM_THRESHOLD 100
 #define VERBOSE true
 
 using namespace std;
@@ -52,6 +55,9 @@ void Worker::loadSettings()
     settings.maxWorkerThreads = MAX_WORKER_THREADS;
     settings.verbose = VERBOSE;
     settings.deleteWaitFlag = false;
+    settings.dailyCheck = DAILY_CHECK; 
+    settings.dailyCheckTime = DAILY_CHECK_TIME; 
+    settings.alarmThreshold = ALARM_THRESHOLD;
     //load settings file
     ifstream file;
     file.open(SETTINGS);
@@ -113,6 +119,31 @@ void Worker::loadSettings()
                     settings.maxWorkerThreads = MAX_WORKER_THREADS;
                     writeLog("ERROR: settings: could not read maxWorkerThreads, set default");
                 }
+            }
+            else if(key == "dailyCheck")
+            {
+                if (value == "true")
+                {
+                    settings.dailyCheck = true;
+                }
+                else
+                {
+                    settings.dailyCheck = false;
+                }
+            }
+            else if(key == "dailyCheckTime")
+            {
+                settings.dailyCheckTime = value;
+            }
+            else if(key == "alarmThreshold")
+            {
+                istringstream str(value);
+                if (!(str >> settings.alarmThreshold))
+                {
+                    settings.alarmThreshold = ALARM_THRESHOLD;
+                    writeLog("ERROR: settings: could not read alarmThreshold, set default");
+                }
+
             }
             else if(key == "flexdir")
             {
@@ -196,8 +227,10 @@ void Worker::printSettings()
     cout << "<settings>" << endl;
     cout << "  <maxLoadAverage>" << settings.maxLoadAverage << "</maxLoadAverage>" << endl;
     cout << "  <maxLoadSleep>" << settings.maxLoadSleep << "</maxLoadSleep>" << endl;
-    cout << "  <maxWorkerThreads>" << settings.maxWorkerThreads 
-        << "</maxWorkerThreads>" << endl;
+    cout << "  <maxWorkerThreads>" << settings.maxWorkerThreads << "</maxWorkerThreads>" << endl;
+    cout << "  <dailyCheck>" << settings.dailyCheck << "</dailyCheck>" << endl;
+    cout << "  <dailyCheckTime>" << settings.dailyCheckTime << "</dailyCheckTime>" << endl;
+    cout << "  <alarmThreshold>" << settings.alarmThreshold << "</alarmThreshold>" << endl;
     vector<flexdir_t>::iterator ixf;
     cout << "  <flexdirs>" << endl;
     for(ixf = settings.flexdirs.begin(); ixf != settings.flexdirs.end(); ixf++)
@@ -289,7 +322,7 @@ void Worker::loadPoolFiles()
     {
         for(ix = settings.flexdirs.begin(); ix != settings.flexdirs.end(); ix++)
         {
-            string pad = ip->path + "/" + ix->path;
+            string pad = ip->path + ix->path;
             if (getFileExists((char*)pad.c_str()))
             {
                 DIR* dir = opendir((char*)pad.c_str());

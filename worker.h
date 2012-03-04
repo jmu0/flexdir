@@ -62,6 +62,9 @@ struct settings_t
     int maxLoadSleep;
     bool verbose;
     bool deleteWaitFlag;
+    bool dailyCheck;
+    string dailyCheckTime;
+    int alarmThreshold;
 };
 
 

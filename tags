@@ -5,10 +5,13 @@
 !_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
 !_TAG_PROGRAM_VERSION	5.8	//
 ADD	worker.h	/^enum taskID_t { ADD, SYNC, DELETE, REMOVE, RENAME };$/;"	e	enum:taskID_t
+ALARM_THRESHOLD	worker.cpp	24;"	d	file:
 CHECKER_H	checker.h	2;"	d
 COPIES	worker.h	/^enum role_t { NONE, FLEXFILE, NEW, PRIMARY, SECONDARY, ORPHAN, COPIES };$/;"	e	enum:role_t
 Checker	checker.cpp	/^Checker::Checker(Worker * w)$/;"	f	class:Checker
 Checker	checker.h	/^class Checker$/;"	c
+DAILY_CHECK	worker.cpp	22;"	d	file:
+DAILY_CHECK_TIME	worker.cpp	23;"	d	file:
 DEF_LOGFILE	worker.cpp	18;"	d	file:
 DELETE	worker.h	/^enum taskID_t { ADD, SYNC, DELETE, REMOVE, RENAME };$/;"	e	enum:taskID_t
 EVENT_BUF_LEN	watcher.cpp	13;"	d	file:
@@ -27,7 +30,7 @@ RENAME	worker.h	/^enum taskID_t { ADD, SYNC, DELETE, REMOVE, RENAME };$/;"	e	enu
 SECONDARY	worker.h	/^enum role_t { NONE, FLEXFILE, NEW, PRIMARY, SECONDARY, ORPHAN, COPIES };$/;"	e	enum:role_t
 SETTINGS	worker.cpp	17;"	d	file:
 SYNC	worker.h	/^enum taskID_t { ADD, SYNC, DELETE, REMOVE, RENAME };$/;"	e	enum:taskID_t
-VERBOSE	worker.cpp	22;"	d	file:
+VERBOSE	worker.cpp	25;"	d	file:
 WATCHER_H	watcher.h	2;"	d
 WORKER_H	worker.h	2;"	d
 Watcher	watcher.cpp	/^Watcher::Watcher(Worker * w)$/;"	f	class:Watcher
@@ -44,22 +47,25 @@ actionRemovePoolFile	worker.cpp	/^int Worker::actionRemovePoolFile(char * path)$
 actionSyncFile	worker.cpp	/^int Worker::actionSyncFile(char * from, char * to)$/;"	f	class:Worker
 actualCopies	worker.h	/^    int actualCopies;$/;"	m	struct:flexfile_t
 addTask	worker.cpp	/^int Worker::addTask(taskID_t ID, string from, string to)$/;"	f	class:Worker
+alarmThreshold	worker.h	/^    int alarmThreshold;$/;"	m	struct:settings_t
 checkerThread	flexdird.cpp	/^void * checkerThread(void * id)$/;"	f
 cli	makefile	/^cli = flexdir$/;"	m
 condition	checker.h	/^        pthread_cond_t * condition;$/;"	m	class:Checker
 condition	flexdird.cpp	/^pthread_cond_t condition = PTHREAD_COND_INITIALIZER;$/;"	v
-condition	testWatcher.cpp	/^pthread_cond_t condition = PTHREAD_COND_INITIALIZER;$/;"	v
-condition	testWorker.cpp	/^pthread_cond_t condition = PTHREAD_COND_INITIALIZER;$/;"	v
+condition	test/testWatcher.cpp	/^pthread_cond_t condition = PTHREAD_COND_INITIALIZER;$/;"	v
+condition	test/testWorker.cpp	/^pthread_cond_t condition = PTHREAD_COND_INITIALIZER;$/;"	v
 condition	watcher.h	/^        pthread_cond_t * condition;$/;"	m	class:Watcher
 copies	worker.h	/^    int copies;$/;"	m	struct:flexdir_t
 daemon	makefile	/^daemon = flexdird$/;"	m
+dailyCheck	worker.h	/^    bool dailyCheck;$/;"	m	struct:settings_t
+dailyCheckTime	worker.h	/^    string dailyCheckTime;$/;"	m	struct:settings_t
 deleteWaitFlag	worker.h	/^    bool deleteWaitFlag;$/;"	m	struct:settings_t
 dirConfig	makefile	/^dirConfig = \/etc$/;"	m
 dirInit	makefile	/^dirInit = \/etc\/rc.d$/;"	m
 dirInstall	makefile	/^dirInstall = \/usr\/local\/bin$/;"	m
 dirLog	makefile	/^dirLog = \/var\/log$/;"	m
 doTask	worker.cpp	/^int Worker::doTask(task_t * task)$/;"	f	class:Worker
-fileTest	testWorker.cpp	/^void fileTest()$/;"	f
+fileTest	test/testWorker.cpp	/^void fileTest()$/;"	f
 files	worker.h	/^    vector<flexfile_t> files;$/;"	m	struct:flexdir_t
 files	worker.h	/^    vector<poolfile_t> files;$/;"	m	struct:pooldir_t
 flexdir_t	worker.h	/^struct flexdir_t$/;"	s
@@ -79,28 +85,28 @@ getPoolSizes	worker.cpp	/^void Worker::getPoolSizes()$/;"	f	class:Worker
 getPoolStructFromPath	worker.cpp	/^int Worker::getPoolStructFromPath(pooldir_t * pooldir, poolfile_t * poolfile, string path)$/;"	f	class:Worker
 getSettings	worker.cpp	/^settings_t * Worker::getSettings()$/;"	f	class:Worker
 getTime	worker.cpp	/^string Worker::getTime(const char * format)$/;"	f	class:Worker
-linktst	testWorker.cpp	/^void linktst(string testlink)$/;"	f
+linktst	test/testWorker.cpp	/^void linktst(string testlink)$/;"	f
 loadFileStructure	worker.cpp	/^void Worker::loadFileStructure()$/;"	f	class:Worker
 loadFlexFiles	worker.cpp	/^void Worker::loadFlexFiles()$/;"	f	class:Worker
 loadPoolFiles	worker.cpp	/^void Worker::loadPoolFiles()$/;"	f	class:Worker
 loadSettings	worker.cpp	/^void Worker::loadSettings()$/;"	f	class:Worker
 logFile	worker.h	/^        string logFile;$/;"	m	class:Worker
-main	flexdir.cpp	/^int main()$/;"	f
+main	flexdir.cpp	/^int main(int argc, char * argv[])$/;"	f
 main	flexdird.cpp	/^int main()$/;"	f
-main	testWatcher.cpp	/^int main()$/;"	f
-main	testWorker.cpp	/^int main()$/;"	f
+main	test/testWatcher.cpp	/^int main()$/;"	f
+main	test/testWorker.cpp	/^int main()$/;"	f
 maxLoadAverage	worker.h	/^    double maxLoadAverage;$/;"	m	struct:settings_t
 maxLoadSleep	worker.h	/^    int maxLoadSleep;$/;"	m	struct:settings_t
 maxWorkerThreads	worker.h	/^    int maxWorkerThreads;$/;"	m	struct:settings_t
 mutex	checker.h	/^        pthread_mutex_t * mutex;$/;"	m	class:Checker
 mutex	flexdird.cpp	/^pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;$/;"	v
-mutex	testWatcher.cpp	/^pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;$/;"	v
-mutex	testWorker.cpp	/^pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;$/;"	v
+mutex	test/testWatcher.cpp	/^pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;$/;"	v
+mutex	test/testWorker.cpp	/^pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;$/;"	v
 mutex	watcher.h	/^        pthread_mutex_t * mutex;$/;"	m	class:Watcher
 naam	makefile	/^naam = flexdir$/;"	m
 name	worker.h	/^    string name;$/;"	m	struct:flexfile_t
 name	worker.h	/^    string name;$/;"	m	struct:poolfile_t
-ndirtest	testWorker.cpp	/^void ndirtest()$/;"	f
+ndirtest	test/testWorker.cpp	/^void ndirtest()$/;"	f
 p_path	worker.h	/^    string p_path;$/;"	m	struct:poolfile_t
 path	worker.h	/^    string path;$/;"	m	struct:flexdir_t
 path	worker.h	/^    string path;$/;"	m	struct:pooldir_t
@@ -113,7 +119,7 @@ printSettings	worker.cpp	/^void Worker::printSettings()$/;"	f	class:Worker
 role	worker.h	/^    role_t role;$/;"	m	struct:flexfile_t
 role	worker.h	/^    role_t role;$/;"	m	struct:poolfile_t
 role_t	worker.h	/^enum role_t { NONE, FLEXFILE, NEW, PRIMARY, SECONDARY, ORPHAN, COPIES };$/;"	g
-s	testWorker.cpp	/^settings_t * s;$/;"	v
+s	test/testWorker.cpp	/^settings_t * s;$/;"	v
 settings	worker.h	/^        settings_t settings;$/;"	m	class:Worker
 settingsValidLine	worker.cpp	/^bool Worker::settingsValidLine(const string &line) const$/;"	f	class:Worker
 settings_t	worker.h	/^struct settings_t $/;"	s
@@ -122,16 +128,16 @@ start	checker.cpp	/^void Checker::start(pthread_mutex_t * m, pthread_cond_t * c)
 start	watcher.cpp	/^void Watcher::start(pthread_mutex_t * m, pthread_cond_t * c)$/;"	f	class:Watcher
 startDaemon	flexdird.cpp	/^void startDaemon()$/;"	f
 startThreads	flexdird.cpp	/^void startThreads()$/;"	f
-startThreads	testWatcher.cpp	/^void startThreads()$/;"	f
-startThreads	testWorker.cpp	/^void startThreads()$/;"	f
+startThreads	test/testWatcher.cpp	/^void startThreads()$/;"	f
+startThreads	test/testWorker.cpp	/^void startThreads()$/;"	f
 startWorker	worker.cpp	/^void Worker::startWorker(pthread_mutex_t * mutex, pthread_cond_t * condition)$/;"	f	class:Worker
-symlinkTest	testWorker.cpp	/^void symlinkTest(){$/;"	f
+symlinkTest	test/testWorker.cpp	/^void symlinkTest(){$/;"	f
 taskID_t	worker.h	/^enum taskID_t { ADD, SYNC, DELETE, REMOVE, RENAME };$/;"	g
 task_t	worker.h	/^struct task_t$/;"	s
 tasks	worker.h	/^    queue<task_t> tasks;$/;"	m	struct:settings_t
-testFunctions	testWorker.cpp	/^void testFunctions()$/;"	f
-testTasks	testWorker.cpp	/^void testTasks()$/;"	f
-testWatcher	testWatcher.cpp	/^void testWatcher()$/;"	f
+testFunctions	test/testWorker.cpp	/^void testFunctions()$/;"	f
+testTasks	test/testWorker.cpp	/^void testTasks()$/;"	f
+testWatcher	test/testWatcher.cpp	/^void testWatcher()$/;"	f
 to	worker.h	/^    string to;$/;"	m	struct:task_t
 usedPerc	worker.h	/^    double usedPerc;$/;"	m	struct:pooldir_t
 verbose	worker.h	/^    bool verbose;$/;"	m	struct:settings_t
@@ -139,16 +145,16 @@ w	flexdir.cpp	/^Checker ch(&w);$/;"	v
 w	flexdird.cpp	/^Checker ch(&w);$/;"	v
 w	flexdird.cpp	/^Watcher wa(&w);$/;"	v
 w	flexdird.cpp	/^Worker w;$/;"	v
-w	testWatcher.cpp	/^Watcher wa(&w);$/;"	v
-w	testWatcher.cpp	/^Worker w;$/;"	v
-wThread	testWorker.cpp	/^void * wThread(void * id)$/;"	f
+w	test/testWatcher.cpp	/^Watcher wa(&w);$/;"	v
+w	test/testWatcher.cpp	/^Worker w;$/;"	v
+wThread	test/testWorker.cpp	/^void * wThread(void * id)$/;"	f
 watchdescriptor	worker.h	/^    int watchdescriptor;$/;"	m	struct:flexdir_t
 watcherThread	flexdird.cpp	/^void * watcherThread(void * id)$/;"	f
-watcherThread	testWatcher.cpp	/^void * watcherThread(void * id)$/;"	f
+watcherThread	test/testWatcher.cpp	/^void * watcherThread(void * id)$/;"	f
 worker	checker.h	/^        Worker * worker;$/;"	m	class:Checker
 worker	watcher.h	/^        Worker * worker;$/;"	m	class:Watcher
 workerThread	flexdird.cpp	/^void * workerThread(void * id)$/;"	f
-workerThread	testWatcher.cpp	/^void * workerThread(void * id)$/;"	f
+workerThread	test/testWatcher.cpp	/^void * workerThread(void * id)$/;"	f
 working	worker.h	/^        bool working;$/;"	m	class:Worker
 writeLog	worker.cpp	/^void Worker::writeLog(string txt)$/;"	f	class:Worker
 x_path	worker.h	/^    string x_path;$/;"	m	struct:flexfile_t
