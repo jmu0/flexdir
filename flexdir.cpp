@@ -22,7 +22,9 @@ int main(int argc, char * argv[])
         }
         else if ((string)argv[i] == "-f")
         {
-            w.printFileStructure();
+            w.loadFileStructure();
+            ch.analyze();
+//            w.printFileStructure();
         }
     }
     return 0;

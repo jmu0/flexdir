@@ -1,2 +1,2 @@
 make
-./flexdir -s
+./flexdir -f

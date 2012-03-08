@@ -281,6 +281,7 @@ void Worker::getPoolSizes()
 
 void Worker::loadFileStructure()
 {
+    cout << "Load Filestructure ... " << endl;
     loadFlexFiles();
     loadPoolFiles();
 }
@@ -353,7 +354,6 @@ void Worker::loadPoolFiles()
 
 void Worker::printFileStructure()
 {
-    loadFileStructure();
     cout << "<fileStructure>" << endl;
     vector<flexdir_t>::iterator ixf;
     vector<flexfile_t>::iterator xf;

@@ -48,6 +48,7 @@ actionSyncFile	worker.cpp	/^int Worker::actionSyncFile(char * from, char * to)$/
 actualCopies	worker.h	/^    int actualCopies;$/;"	m	struct:flexfile_t
 addTask	worker.cpp	/^int Worker::addTask(taskID_t ID, string from, string to)$/;"	f	class:Worker
 alarmThreshold	worker.h	/^    int alarmThreshold;$/;"	m	struct:settings_t
+analyze	checker.cpp	/^void Checker::analyze()$/;"	f	class:Checker
 checkerThread	flexdird.cpp	/^void * checkerThread(void * id)$/;"	f
 cli	makefile	/^cli = flexdir$/;"	m
 condition	checker.h	/^        pthread_cond_t * condition;$/;"	m	class:Checker

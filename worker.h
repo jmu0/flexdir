@@ -77,10 +77,8 @@ class Worker
         bool working;
         bool settingsValidLine(const string &line) const;
         void getPoolSizes();
-        void loadFileStructure();
         void loadFlexFiles();
         void loadPoolFiles();
-        vector<poolfile_t> getPoolFiles(flexfile_t * flexfile);
     public:
         Worker();
         ~Worker();
@@ -91,6 +89,8 @@ class Worker
         void printSettings();
         vector<pooldir_t> getNdirs(int n);
         bool getFileExists(const char * path);
+        vector<poolfile_t> getPoolFiles(flexfile_t * flexfile);
+        void loadFileStructure();
         void printFileStructure();
         bool getIsLink(char * path);
         string getLinkTarget(char * path);

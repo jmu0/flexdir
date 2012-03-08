@@ -15,6 +15,7 @@ class Checker
         Checker(Worker * w);
         ~Checker();
         void start(pthread_mutex_t * m, pthread_cond_t * c);
+        void analyze();
 };
 
 #endif
