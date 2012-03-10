@@ -281,7 +281,6 @@ void Worker::getPoolSizes()
 
 void Worker::loadFileStructure()
 {
-    cout << "Load Filestructure ... " << endl;
     loadFlexFiles();
     loadPoolFiles();
 }
@@ -370,7 +369,7 @@ void Worker::printFileStructure()
             cout << "        <flexfile>" << endl;
             cout << "          <name>" << xf->name << "</name>\n";
             cout << "          <x_path>" << xf->x_path << "</x_path>\n";
-            cout << "          <role>" << xf->role << "</role>\n";
+            cout << "          <role>" << role2string(xf->role) << "</role>\n";
             cout << "        </flexfile>" << endl;
         }
         cout << "      </files>" << endl;
@@ -393,13 +392,44 @@ void Worker::printFileStructure()
             cout << "          <name>" << pf->name << "</name>\n";
             cout << "          <p_path>" << pf->p_path << "</p_path>\n";
             cout << "          <x_path>" << pf->x_path << "</x_path>\n";
-            cout << "          <role>" << pf->role << "</role>\n";
+            cout << "          <role>" << role2string(pf->role) << "</role>\n";
             cout << "        </poolfile>" << endl;
         }
         cout << "      </files>" << endl;
         cout << "    </pooldir>" << endl;
     }
     cout << "  </pooldirs>\n</fileStructure>" << endl;
+}
+
+string Worker::role2string(role_t role)
+{
+    switch(role)
+    {
+        case NONE:
+            return "NONE";
+            break;
+        case FLEXFILE:
+            return "FLEXFILE";
+            break;
+        case NEW:
+            return "NEW";
+            break;
+        case PRIMARY:
+            return "PRIMARY";
+            break;
+        case SECONDARY:
+            return "SECONDARY";
+            break;
+        case ORPHAN:
+            return "ORPHAN";
+            break;
+        case COPIES:
+            return "COPIES";
+            break;
+        default:
+            return "UNKNOWN";
+            break;
+    }
 }
 
 void Worker::writeLog(string txt)
@@ -509,16 +539,21 @@ bool Worker::getIsLink(char * path)
     else { 
         writeLog("FAILED: getIsLink > lstat(" + (string)path+ ")");
         return false;
-    } 
+    }
 }
 
 string Worker::getLinkTarget(char * path)
 {
     char buf[512];
-    if (readlink(path, buf, sizeof(buf)) < 0)
+    int len = readlink(path, buf, sizeof(buf));
+    if (len < 0)
     {
         writeLog("No link target found");
         buf[0] = '\0';
+    }
+    else 
+    {
+        buf[len] = '\0';
     }
     return (string)buf;
 }

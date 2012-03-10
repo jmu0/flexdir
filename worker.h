@@ -92,6 +92,7 @@ class Worker
         void loadFileStructure();
         void getPoolSizes();
         void printFileStructure();
+        string role2string(role_t role);
         bool getIsLink(char * path);
         string getLinkTarget(char * path);
         int actionMoveFile(char * from, char * to);

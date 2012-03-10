@@ -74,6 +74,7 @@ flexdirs	worker.h	/^    vector<flexdir_t> flexdirs;$/;"	m	struct:settings_t
 flexfile_t	worker.h	/^struct flexfile_t$/;"	s
 freeMB	worker.h	/^    long freeMB;$/;"	m	struct:pooldir_t
 from	worker.h	/^    string from;$/;"	m	struct:task_t
+getErrorCount	checker.cpp	/^int Checker::getErrorCount()$/;"	f	class:Checker
 getFileExists	worker.cpp	/^bool Worker::getFileExists(const char * path)$/;"	f	class:Worker
 getFlexStructFromPath	worker.cpp	/^int Worker::getFlexStructFromPath(flexdir_t * flexdir, flexfile_t * flexfile, string path)$/;"	f	class:Worker
 getIsLink	worker.cpp	/^bool Worker::getIsLink(char * path)$/;"	f	class:Worker
@@ -116,9 +117,13 @@ pooldir_t	worker.h	/^struct pooldir_t$/;"	s
 pooldirs	worker.h	/^    vector<pooldir_t> pooldirs;$/;"	m	struct:settings_t
 poolfile_t	worker.h	/^struct poolfile_t$/;"	s
 printFileStructure	worker.cpp	/^void Worker::printFileStructure()$/;"	f	class:Worker
+printHelp	flexdir.cpp	/^void printHelp()$/;"	f
 printSettings	worker.cpp	/^void Worker::printSettings()$/;"	f	class:Worker
+repair	checker.cpp	/^void Checker::repair(bool prompt)$/;"	f	class:Checker
+resync	checker.cpp	/^void Checker::resync(bool verbose)$/;"	f	class:Checker
 role	worker.h	/^    role_t role;$/;"	m	struct:flexfile_t
 role	worker.h	/^    role_t role;$/;"	m	struct:poolfile_t
+role2string	worker.cpp	/^string Worker::role2string(role_t role)$/;"	f	class:Worker
 role_t	worker.h	/^enum role_t { NONE, FLEXFILE, NEW, PRIMARY, SECONDARY, ORPHAN, COPIES };$/;"	g
 s	test/testWorker.cpp	/^settings_t * s;$/;"	v
 setPoolfileRole	checker.cpp	/^int Checker::setPoolfileRole(poolfile_t poolfile, role_t role)$/;"	f	class:Checker
