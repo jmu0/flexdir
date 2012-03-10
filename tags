@@ -121,6 +121,7 @@ role	worker.h	/^    role_t role;$/;"	m	struct:flexfile_t
 role	worker.h	/^    role_t role;$/;"	m	struct:poolfile_t
 role_t	worker.h	/^enum role_t { NONE, FLEXFILE, NEW, PRIMARY, SECONDARY, ORPHAN, COPIES };$/;"	g
 s	test/testWorker.cpp	/^settings_t * s;$/;"	v
+setPoolfileRole	checker.cpp	/^int Checker::setPoolfileRole(poolfile_t poolfile, role_t role)$/;"	f	class:Checker
 settings	worker.h	/^        settings_t settings;$/;"	m	class:Worker
 settingsValidLine	worker.cpp	/^bool Worker::settingsValidLine(const string &line) const$/;"	f	class:Worker
 settings_t	worker.h	/^struct settings_t $/;"	s

@@ -23,8 +23,9 @@ int main(int argc, char * argv[])
         else if ((string)argv[i] == "-f")
         {
             w.loadFileStructure();
+            w.getPoolSizes();
             ch.analyze();
-//            w.printFileStructure();
+            w.printFileStructure();
         }
     }
     return 0;
