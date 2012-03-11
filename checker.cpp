@@ -59,6 +59,7 @@ void Checker::analyze()
                 {
                     if (poolfiles.size() != (*it).copies)
                     {
+                        (*fl).actualCopies = poolfiles.size();
                         (*fl).role = COPIES;
                     }
                 }
@@ -138,12 +139,187 @@ int Checker::setPoolfileRole(poolfile_t poolfile, role_t role)
     return 1;
 }
 
-void Checker::repair(bool prompt)
+int Checker::repair(bool prompt)
 {
-    cout << "REPAIR !!" << endl;
+    vector<flexdir_t>::iterator fit;
+    vector<flexfile_t>::iterator ffit;
+    vector<pooldir_t>::iterator pit;
+    vector<poolfile_t>::iterator pfit;
+    vector<poolfile_t> poolfiles;
+    settings_t * s = worker->getSettings();
+    string rmpath, answer = "y";
+    for (fit = s->flexdirs.begin(); fit != s->flexdirs.end(); fit++)    
+    {
+        for (ffit = fit->files.begin(); ffit != fit->files.end(); ffit++)
+        {
+            string path = ffit->x_path + "/" + ffit->name;
+            switch (ffit->role)
+            {
+                case NEW:
+                    answer = "y";
+                    if (prompt == true)
+                    {
+                        cout << "\nFile: " << path << " is not a symbolic link."<< endl;
+                        cout << "Add to pool? (y=yes, n=no, a=all, q=quit) ";
+                        cin >> answer;
+                    }
+                    if (answer == "q" || answer == "Q")
+                    {
+                        return 1;
+                    }
+                    if (answer == "a" || answer == "A")
+                    {
+                        prompt = false;
+                    }
+                    if (answer == "y" || answer == "Y")
+                    {
+                        if (mutex != NULL)
+                        {
+                            pthread_mutex_lock(mutex);
+                        }
+                        worker->addTask(ADD, path, " ");
+                        if (mutex != NULL)
+                        {
+                            pthread_mutex_unlock(mutex);
+                        }
+                    }
+                    break;
+                case COPIES:
+                    answer = "y";
+                    if (prompt == true)
+                    {
+                        cout << "\nFile: " << path << " has "<< ffit->actualCopies;
+                        cout << " instead of " << fit->copies << " copies" << endl;
+                        cout << "Repair? (y=yes, n=no, a=all, q=quit) ";
+                        cin >> answer;
+                    }
+                    if (answer == "q" || answer == "Q")
+                    {
+                        return 1;
+                    }
+                    if (answer == "a" || answer == "A")
+                    {
+                        prompt = false;
+                    }
+                    if (answer == "y" || answer == "Y")
+                    {
+                        if (fit->copies < ffit->actualCopies)
+                        {
+                            //delete copies
+                            poolfiles = worker->getPoolFiles(&(*ffit));
+                            for (int i = 0; i < (ffit->actualCopies - fit->copies); i++)
+                            {
+                                for (pfit = poolfiles.begin(); pfit != poolfiles.end(); pfit++)
+                                {
+                                    if (pfit->role != PRIMARY)
+                                    {
+                                        if (mutex != NULL)
+                                        {
+                                            pthread_mutex_lock(mutex);
+                                        }
+                                        rmpath = pfit->p_path + pfit->x_path + "/" + pfit->name;
+                                        worker->addTask(REMOVE, rmpath, " ");
+                                        if (mutex != NULL)
+                                        {
+                                            pthread_mutex_unlock(mutex);
+                                        }
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                        else
+                        {
+                            //TODO: add copies
+                        }
+                    }                  
+                    break;
+                case ORPHAN:
+                    answer = "y";
+                    if (prompt == true)
+                    {
+                        cout << "\nFile: " << path << " link target does not exist."<< endl;
+                        cout << "Repair? (y=yes, n=no, a=all, q=quit) ";
+                        cin >> answer;
+                    }
+                    if (answer == "q" || answer == "Q")
+                    {
+                        return 1;
+                    }
+                    if (answer == "a" || answer == "A")
+                    {
+                        prompt = false;
+                    }
+                    if (answer == "y" || answer == "Y")
+                    {
+                        //TODO: link target does not exist, check for secondary copies
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+    for (pit = s->pooldirs.begin(); pit != s->pooldirs.end(); pit++)
+    {
+        for (pfit = pit->files.begin(); pfit != pit->files.end(); pfit++)
+        {
+            if (pfit->role == ORPHAN)
+            {
+                string linkPath = pfit->x_path + "/" + pfit->name;
+                string pfPath = pit->path + pfit->x_path + "/" + pfit->name;
+                if (worker->getFileExists((char *)linkPath.c_str()) == false)
+                {
+                    answer = "y";
+                    if (prompt == true)
+                    {
+                        cout << "\nPoolfile: " << pfPath << " is not linked."<< endl;
+                        cout << "Create link? (y=yes, n=no, a=all, q=quit) ";
+                        cin >> answer;
+                    }
+                    if (answer == "q" || answer == "Q")
+                    {
+                        return 1;
+                    }
+                    if (answer == "a" || answer == "A")
+                    {
+                        prompt = false;
+                    }
+                    if (answer == "y" || answer == "Y")
+                    {
+                        if (mutex != NULL)
+                        {
+                            pthread_mutex_lock(mutex);
+                        }
+                        rmpath = pfit->p_path + pfit->x_path + "/" + pfit->name;
+                        worker->addTask(LINK, linkPath, pfPath);
+                        //TODO: check if number of copies are correct
+                        if (mutex != NULL)
+                        {
+                            pthread_mutex_unlock(mutex);
+                        }
+                    }
+                }
+            }
+        }
+    }
+    if (condition != NULL)
+    {
+        pthread_cond_signal(condition);
+    }
+    else
+    {
+        settings_t * s = worker->getSettings();
+        while(s->tasks.size() > 0)
+        {
+            task_t task = s->tasks.front();
+            s->tasks.pop();
+            worker->doTask(&task);
+        }
+   }
 }
 
-void Checker::resync(bool verbose)
+void Checker::resync()
 {
     vector<flexdir_t>::iterator fit;
     vector<poolfile_t> poolfiles;
@@ -151,10 +327,7 @@ void Checker::resync(bool verbose)
     vector<flexfile_t>::iterator ffit;
     settings_t * s = worker->getSettings();
     Worker * w = worker;
-    if (verbose == true)
-    {
-        cout << "start synchronizing copies..." << endl;
-    }
+    w->writeLog("RESYNC: start synchronizing copies");
     for (fit = s->flexdirs.begin(); fit != s->flexdirs.end(); fit++)
     {
         for (ffit = fit->files.begin(); ffit != fit->files.end(); ffit++)
@@ -174,52 +347,47 @@ void Checker::resync(bool verbose)
                             ppath = pfit->p_path + pfit->x_path + "/" + pfit->name;
                             if (linktarget != ppath)
                             {
-                                if (w->actionSyncFile((char*)linktarget.c_str(), (char*)ppath.c_str()) == 0)
+                                if (mutex != NULL)
                                 {
-                                    if (verbose == true)
-                                    {
-                                        cout << "syncronized " << linktarget << " to " << ppath << endl;
-                                    }
+                                    pthread_mutex_lock(mutex);
                                 }
-                                else
+                                w->addTask(SYNC, linktarget, ppath);
+                                if (mutex != NULL)
                                 {
-                                    if (verbose == true)
-                                    {
-                                        cout << "FAILED synchrinizing " << linktarget << " to  " << ppath << endl;
-                                    }
+                                    pthread_mutex_unlock(mutex);
                                 }
                             }
                         }
                     }
                     else
                     {
-                        if (verbose == true)
-                        {
-                            cout << "FAILED no poolfiles found for: " << path << endl;
-                        }
+                        w->writeLog("RESYNC: FAILED no poolfiles found for: " + path);
                     }
-
                 }
                 else
                 {
-                    if (verbose == true)
-                    {
-                        cout << "FAILED linktarget does not exist: " << linktarget << endl;
-                    }
+                    w->writeLog("RESYNC: FAILED linktarget does not exist: " + linktarget);
                 }
             }
             else
             {
-                if (verbose == true)
-                {
-                    cout << "not a symlink: " << path << endl;
-                }
+                w->writeLog("RESYNC: not a symlink: " + path);
             }
-
         }
     }
-    if (verbose == true)
+    if (condition != NULL)
     {
-        cout << "finished synchronizing copies !" << endl;
+        pthread_cond_signal(condition);
     }
+    else
+    {
+        settings_t * s = w->getSettings();
+        while(s->tasks.size() > 0)
+        {
+            task_t task = s->tasks.front();
+            s->tasks.pop();
+            w->doTask(&task);
+        }
+    }
+    w->writeLog("RESYNC: finished synchronizing copies");
 }

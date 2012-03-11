@@ -8,7 +8,7 @@
 using namespace std;
 
 enum role_t { NONE, FLEXFILE, NEW, PRIMARY, SECONDARY, ORPHAN, COPIES };
-enum taskID_t { ADD, SYNC, DELETE, REMOVE, RENAME };
+enum taskID_t { ADD, SYNC, DELETE, REMOVE, RENAME, LINK };
 
 struct task_t
 {

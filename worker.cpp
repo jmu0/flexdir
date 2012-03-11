@@ -281,6 +281,16 @@ void Worker::getPoolSizes()
 
 void Worker::loadFileStructure()
 {
+    vector<flexdir_t>::iterator fit;
+    vector<pooldir_t>::iterator pit;
+    for (fit = settings.flexdirs.begin(); fit != settings.flexdirs.end(); fit++)
+    {
+        (*fit).files.clear();
+    }
+    for (pit = settings.pooldirs.begin(); pit != settings.pooldirs.end(); pit++)
+    {
+        (*pit).files.clear();
+    }
     loadFlexFiles();
     loadPoolFiles();
 }
@@ -309,7 +319,7 @@ void Worker::loadFlexFiles()
         }
         else
         {
-            writeLog("ERROR: loadFileStructure: could not open flexfile: "+ (string)ix->path);
+            writeLog("ERROR: loadFileStructure: could not open flexdir: "+ (string)ix->path);
         }
     }
 }
@@ -344,7 +354,7 @@ void Worker::loadPoolFiles()
                 }
                 else
                 {
-                    writeLog("ERROR: loadFileStructure: could not open poolfile: "+ (string)ix->path);
+                    writeLog("ERROR: loadFileStructure: could not open poolfile: "+ pad);
                 }
             }
         }
@@ -651,8 +661,8 @@ int Worker::actionRemovePoolFile(char * path)
 
 void Worker::startWorker(pthread_mutex_t * mutex, pthread_cond_t * condition)
 {
-    bool stop = false;
-    while(stop == false)
+    bool stopThread = false;
+    while(stopThread == false)
     {
         pthread_mutex_lock(mutex);
         if (settings.tasks.size() == 0)
@@ -877,6 +887,17 @@ int Worker::doTask(task_t * task)
             else
             {
                 logEntry += "FAILED could not get flexdir structure ";
+            }
+            break;
+        case LINK:
+            logEntry += "LINK task: ";
+            if (actionCreateLink((char *)task->to.c_str(), (char *)task->from.c_str()) == 0)
+            {
+                logEntry += "OK ";
+            }
+            else
+            {
+                logEntry += "FAILED: could not create symbolic link ";
             }
             break;
         default:

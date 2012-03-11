@@ -7,13 +7,13 @@ dirInit = /etc/rc.d
 dirLog = /var/log
 
 main : $(daemon).o $(cli).o worker.o watcher.o checker.o
-	g++ $(daemon).o worker.o watcher.o checker.o -lpthread -o $(daemon); g++ $(cli).o worker.o checker.o -o $(cli)
+	g++ $(daemon).o worker.o watcher.o checker.o -lpthread -o $(daemon); g++ $(cli).o worker.o checker.o -lpthread -o $(cli)
 
 $(daemon).o : $(daemon).cpp
 	g++ -c $(daemon).cpp -lpthread
 
 $(cli).o : $(cli).cpp
-	g++ -c $(cli).cpp
+	g++ -c $(cli).cpp -lpthread
 
 worker.o : worker.cpp
 	g++ -c worker.cpp -lpthread

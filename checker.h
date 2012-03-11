@@ -18,8 +18,8 @@ class Checker
         void start(pthread_mutex_t * m, pthread_cond_t * c);
         void analyze();
         int getErrorCount();
-        void repair(bool prompt);
-        void resync(bool verbose);
+        int repair(bool prompt);
+        void resync();
 };
 
 #endif

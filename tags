@@ -4,7 +4,7 @@
 !_TAG_PROGRAM_NAME	Exuberant Ctags	//
 !_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
 !_TAG_PROGRAM_VERSION	5.8	//
-ADD	worker.h	/^enum taskID_t { ADD, SYNC, DELETE, REMOVE, RENAME };$/;"	e	enum:taskID_t
+ADD	worker.h	/^enum taskID_t { ADD, SYNC, DELETE, REMOVE, RENAME, LINK };$/;"	e	enum:taskID_t
 ALARM_THRESHOLD	worker.cpp	24;"	d	file:
 CHECKER_H	checker.h	2;"	d
 COPIES	worker.h	/^enum role_t { NONE, FLEXFILE, NEW, PRIMARY, SECONDARY, ORPHAN, COPIES };$/;"	e	enum:role_t
@@ -13,11 +13,12 @@ Checker	checker.h	/^class Checker$/;"	c
 DAILY_CHECK	worker.cpp	22;"	d	file:
 DAILY_CHECK_TIME	worker.cpp	23;"	d	file:
 DEF_LOGFILE	worker.cpp	18;"	d	file:
-DELETE	worker.h	/^enum taskID_t { ADD, SYNC, DELETE, REMOVE, RENAME };$/;"	e	enum:taskID_t
+DELETE	worker.h	/^enum taskID_t { ADD, SYNC, DELETE, REMOVE, RENAME, LINK };$/;"	e	enum:taskID_t
 EVENT_BUF_LEN	watcher.cpp	13;"	d	file:
 EVENT_SIZE	watcher.cpp	12;"	d	file:
 FLEXFILE	worker.h	/^enum role_t { NONE, FLEXFILE, NEW, PRIMARY, SECONDARY, ORPHAN, COPIES };$/;"	e	enum:role_t
 ID	worker.h	/^    taskID_t ID;$/;"	m	struct:task_t
+LINK	worker.h	/^enum taskID_t { ADD, SYNC, DELETE, REMOVE, RENAME, LINK };$/;"	e	enum:taskID_t
 MAX_LOAD_AVG	worker.cpp	19;"	d	file:
 MAX_LOAD_SLEEP	worker.cpp	20;"	d	file:
 MAX_WORKER_THREADS	worker.cpp	21;"	d	file:
@@ -25,11 +26,11 @@ NEW	worker.h	/^enum role_t { NONE, FLEXFILE, NEW, PRIMARY, SECONDARY, ORPHAN, CO
 NONE	worker.h	/^enum role_t { NONE, FLEXFILE, NEW, PRIMARY, SECONDARY, ORPHAN, COPIES };$/;"	e	enum:role_t
 ORPHAN	worker.h	/^enum role_t { NONE, FLEXFILE, NEW, PRIMARY, SECONDARY, ORPHAN, COPIES };$/;"	e	enum:role_t
 PRIMARY	worker.h	/^enum role_t { NONE, FLEXFILE, NEW, PRIMARY, SECONDARY, ORPHAN, COPIES };$/;"	e	enum:role_t
-REMOVE	worker.h	/^enum taskID_t { ADD, SYNC, DELETE, REMOVE, RENAME };$/;"	e	enum:taskID_t
-RENAME	worker.h	/^enum taskID_t { ADD, SYNC, DELETE, REMOVE, RENAME };$/;"	e	enum:taskID_t
+REMOVE	worker.h	/^enum taskID_t { ADD, SYNC, DELETE, REMOVE, RENAME, LINK };$/;"	e	enum:taskID_t
+RENAME	worker.h	/^enum taskID_t { ADD, SYNC, DELETE, REMOVE, RENAME, LINK };$/;"	e	enum:taskID_t
 SECONDARY	worker.h	/^enum role_t { NONE, FLEXFILE, NEW, PRIMARY, SECONDARY, ORPHAN, COPIES };$/;"	e	enum:role_t
 SETTINGS	worker.cpp	17;"	d	file:
-SYNC	worker.h	/^enum taskID_t { ADD, SYNC, DELETE, REMOVE, RENAME };$/;"	e	enum:taskID_t
+SYNC	worker.h	/^enum taskID_t { ADD, SYNC, DELETE, REMOVE, RENAME, LINK };$/;"	e	enum:taskID_t
 VERBOSE	worker.cpp	25;"	d	file:
 WATCHER_H	watcher.h	2;"	d
 WORKER_H	worker.h	2;"	d
@@ -116,11 +117,15 @@ pooldirSort	worker.cpp	/^bool pooldirSort(pooldir_t d1, pooldir_t d2)$/;"	f
 pooldir_t	worker.h	/^struct pooldir_t$/;"	s
 pooldirs	worker.h	/^    vector<pooldir_t> pooldirs;$/;"	m	struct:settings_t
 poolfile_t	worker.h	/^struct poolfile_t$/;"	s
+printFileStructure	flexdir.cpp	/^void printFileStructure()$/;"	f
 printFileStructure	worker.cpp	/^void Worker::printFileStructure()$/;"	f	class:Worker
 printHelp	flexdir.cpp	/^void printHelp()$/;"	f
 printSettings	worker.cpp	/^void Worker::printSettings()$/;"	f	class:Worker
-repair	checker.cpp	/^void Checker::repair(bool prompt)$/;"	f	class:Checker
-resync	checker.cpp	/^void Checker::resync(bool verbose)$/;"	f	class:Checker
+printStatus	flexdir.cpp	/^void printStatus()$/;"	f
+repair	checker.cpp	/^int Checker::repair(bool prompt)$/;"	f	class:Checker
+repair	flexdir.cpp	/^void repair()$/;"	f
+resync	checker.cpp	/^void Checker::resync()$/;"	f	class:Checker
+resync	flexdir.cpp	/^void resync()$/;"	f
 role	worker.h	/^    role_t role;$/;"	m	struct:flexfile_t
 role	worker.h	/^    role_t role;$/;"	m	struct:poolfile_t
 role2string	worker.cpp	/^string Worker::role2string(role_t role)$/;"	f	class:Worker
@@ -139,7 +144,7 @@ startThreads	test/testWatcher.cpp	/^void startThreads()$/;"	f
 startThreads	test/testWorker.cpp	/^void startThreads()$/;"	f
 startWorker	worker.cpp	/^void Worker::startWorker(pthread_mutex_t * mutex, pthread_cond_t * condition)$/;"	f	class:Worker
 symlinkTest	test/testWorker.cpp	/^void symlinkTest(){$/;"	f
-taskID_t	worker.h	/^enum taskID_t { ADD, SYNC, DELETE, REMOVE, RENAME };$/;"	g
+taskID_t	worker.h	/^enum taskID_t { ADD, SYNC, DELETE, REMOVE, RENAME, LINK };$/;"	g
 task_t	worker.h	/^struct task_t$/;"	s
 tasks	worker.h	/^    queue<task_t> tasks;$/;"	m	struct:settings_t
 testFunctions	test/testWorker.cpp	/^void testFunctions()$/;"	f

@@ -41,20 +41,20 @@ void startDaemon()
     {
         exit(EXIT_SUCCESS);
     }
-    //umask veranderen
+    //change umask 
     umask(0);
-    //create unique session id voor child proces
+    //create unique session id for child proces
     sid = setsid();
     if (sid < 0)
     {
         exit(EXIT_FAILURE);
     }
-    //working directory veranderen
+    //change working directory 
     if ((chdir("/")) < 0) 
     {
         exit(EXIT_FAILURE);
     }
-    //standaard file descriptors sluiten
+    //close standard file descriptors
     close(STDIN_FILENO);
     freopen ("/dev/null","w",stdout);//Can't close stdout, needed by system() calls.
     close(STDERR_FILENO);
