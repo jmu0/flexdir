@@ -143,11 +143,12 @@ int Checker::repair(bool prompt)
 {
     vector<flexdir_t>::iterator fit;
     vector<flexfile_t>::iterator ffit;
+    vector<pooldir_t> pooldirs;
     vector<pooldir_t>::iterator pit;
     vector<poolfile_t>::iterator pfit;
     vector<poolfile_t> poolfiles;
     settings_t * s = worker->getSettings();
-    string rmpath, answer = "y";
+    string rmpath, linktarget, pfpath, ffpath, answer = "y";
     for (fit = s->flexdirs.begin(); fit != s->flexdirs.end(); fit++)    
     {
         for (ffit = fit->files.begin(); ffit != fit->files.end(); ffit++)
@@ -218,7 +219,7 @@ int Checker::repair(bool prompt)
                                             pthread_mutex_lock(mutex);
                                         }
                                         rmpath = pfit->p_path + pfit->x_path + "/" + pfit->name;
-                                        worker->addTask(REMOVE, rmpath, " ");
+                                        worker->addTask(DELETE, rmpath, " ");
                                         if (mutex != NULL)
                                         {
                                             pthread_mutex_unlock(mutex);
@@ -230,7 +231,34 @@ int Checker::repair(bool prompt)
                         }
                         else
                         {
-                            //TODO: add copies
+                            //add copies
+                            pooldirs = worker->getNdirs(fit->copies);
+                            for (pit = pooldirs.begin(); pit != pooldirs.end(); pit++)
+                            {
+                                if (ffit->actualCopies < fit->copies)
+                                {
+                                    pfpath = pit->path + fit->path + "/" + ffit->name;
+                                    if (worker->getFileExists((char*)pfpath.c_str()) == false)
+                                    {
+                                        ffpath = ffit->x_path + "/" + ffit->name;
+                                        linktarget = worker->getLinkTarget((char*)ffpath.c_str());
+                                        if (mutex != NULL)
+                                        {
+                                            pthread_mutex_lock(mutex);
+                                        }
+                                        worker->addTask(SYNC, linktarget, pfpath);
+                                        if (mutex != NULL)
+                                        {
+                                            pthread_mutex_unlock(mutex);
+                                        }
+                                        ffit->actualCopies++;
+                                    }
+                                }
+                                else
+                                {
+                                    break;
+                                }
+                            }
                         }
                     }                  
                     break;
@@ -252,7 +280,9 @@ int Checker::repair(bool prompt)
                     }
                     if (answer == "y" || answer == "Y")
                     {
-                        //TODO: link target does not exist, check for secondary copies
+                        //link target does not exist, check for secondary copies
+                        poolfiles = worker->getPoolFiles(&(*ffit));
+                        hier was ik
                     }
                     break;
                 default:
