@@ -12,6 +12,7 @@ class Checker
         pthread_mutex_t * mutex;
         pthread_cond_t * condition;
         int setPoolfileRole(poolfile_t poolfile, role_t role);
+        void repairCopies(flexfile_t * ff, flexdir_t * fd);
     public:
         Checker(Worker * w);
         ~Checker();

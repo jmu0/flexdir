@@ -204,62 +204,7 @@ int Checker::repair(bool prompt)
                     }
                     if (answer == "y" || answer == "Y")
                     {
-                        if (fit->copies < ffit->actualCopies)
-                        {
-                            //delete copies
-                            poolfiles = worker->getPoolFiles(&(*ffit));
-                            for (int i = 0; i < (ffit->actualCopies - fit->copies); i++)
-                            {
-                                for (pfit = poolfiles.begin(); pfit != poolfiles.end(); pfit++)
-                                {
-                                    if (pfit->role != PRIMARY)
-                                    {
-                                        if (mutex != NULL)
-                                        {
-                                            pthread_mutex_lock(mutex);
-                                        }
-                                        rmpath = pfit->p_path + pfit->x_path + "/" + pfit->name;
-                                        worker->addTask(DELETE, rmpath, " ");
-                                        if (mutex != NULL)
-                                        {
-                                            pthread_mutex_unlock(mutex);
-                                        }
-                                        break;
-                                    }
-                                }
-                            }
-                        }
-                        else
-                        {
-                            //add copies
-                            pooldirs = worker->getNdirs(fit->copies);
-                            for (pit = pooldirs.begin(); pit != pooldirs.end(); pit++)
-                            {
-                                if (ffit->actualCopies < fit->copies)
-                                {
-                                    pfpath = pit->path + fit->path + "/" + ffit->name;
-                                    if (worker->getFileExists((char*)pfpath.c_str()) == false)
-                                    {
-                                        ffpath = ffit->x_path + "/" + ffit->name;
-                                        linktarget = worker->getLinkTarget((char*)ffpath.c_str());
-                                        if (mutex != NULL)
-                                        {
-                                            pthread_mutex_lock(mutex);
-                                        }
-                                        worker->addTask(SYNC, linktarget, pfpath);
-                                        if (mutex != NULL)
-                                        {
-                                            pthread_mutex_unlock(mutex);
-                                        }
-                                        ffit->actualCopies++;
-                                    }
-                                }
-                                else
-                                {
-                                    break;
-                                }
-                            }
-                        }
+                        repairCopies(&(*ffit), &(*fit));
                     }                  
                     break;
                 case ORPHAN:
@@ -282,7 +227,37 @@ int Checker::repair(bool prompt)
                     {
                         //link target does not exist, check for secondary copies
                         poolfiles = worker->getPoolFiles(&(*ffit));
-                        hier was ik
+                        ffpath = ffit->x_path + "/" + ffit->name;
+                        if (poolfiles.size() > 0)
+                        {
+                            //change link target and check number of copies
+                            pfit = poolfiles.begin();
+                            pfpath = pfit->p_path + pfit->x_path + "/" + pfit->name;
+                            if (mutex != NULL)
+                            {
+                                pthread_mutex_lock(mutex);
+                            }
+                            worker->addTask(DELETE, ffpath, " ");
+                            worker->addTask(LINK, ffpath, pfpath);
+                            if (mutex != NULL)
+                            {
+                                pthread_mutex_unlock(mutex);
+                            } 
+                            repairCopies(&(*ffit), &(*fit));
+                        }
+                        else
+                        {
+                            //delete link
+                            if (mutex != NULL)
+                            {
+                                pthread_mutex_lock(mutex);
+                            }
+                            worker->addTask(DELETE, ffpath, " ");
+                            if (mutex != NULL)
+                            {
+                                pthread_mutex_unlock(mutex);
+                            }
+                        }
                     }
                     break;
                 default:
@@ -323,11 +298,11 @@ int Checker::repair(bool prompt)
                         }
                         rmpath = pfit->p_path + pfit->x_path + "/" + pfit->name;
                         worker->addTask(LINK, linkPath, pfPath);
-                        //TODO: check if number of copies are correct
                         if (mutex != NULL)
                         {
                             pthread_mutex_unlock(mutex);
                         }
+                        //TODO: check number of copies
                     }
                 }
             }
@@ -346,7 +321,76 @@ int Checker::repair(bool prompt)
             s->tasks.pop();
             worker->doTask(&task);
         }
-   }
+    }
+}
+
+void Checker::repairCopies(flexfile_t * ff, flexdir_t * fd)
+{
+    vector<poolfile_t> poolfiles;
+    vector<poolfile_t>::iterator pfit;
+    vector<pooldir_t> pooldirs;
+    vector<pooldir_t>::iterator pit;
+    string rmpath, pfpath, ffpath, from;
+    poolfiles = worker->getPoolFiles(ff);
+    if (poolfiles.size() > 0)
+    {
+        if (fd->copies < ff->actualCopies)
+        {
+            //delete copies
+            for (int i = 0; i < (ff->actualCopies - fd->copies); i++)
+            {
+                for (pfit = poolfiles.begin(); pfit != poolfiles.end(); pfit++)
+                {
+                    if (pfit->role != PRIMARY)
+                    {
+                        if (mutex != NULL)
+                        {
+                            pthread_mutex_lock(mutex);
+                        }
+                        rmpath = pfit->p_path + pfit->x_path + "/" + pfit->name;
+                        worker->addTask(DELETE, rmpath, " ");
+                        if (mutex != NULL)
+                        {
+                            pthread_mutex_unlock(mutex);
+                        }
+                        break;
+                    }
+                }
+            }
+        }
+        else
+        {
+            //add copies
+            pooldirs = worker->getNdirs(fd->copies);
+            pfit = poolfiles.begin();
+            from = pfit->p_path + pfit->x_path + "/" + pfit->name;
+            for (pit = pooldirs.begin(); pit != pooldirs.end(); pit++)
+            {
+                if (ff->actualCopies < fd->copies)
+                {
+                    pfpath = pit->path + fd->path + "/" + ff->name;
+                    if (worker->getFileExists((char*)pfpath.c_str()) == false)
+                    {
+                        ffpath = ff->x_path + "/" + ff->name;
+                        if (mutex != NULL)
+                        {
+                            pthread_mutex_lock(mutex);
+                        }
+                        worker->addTask(SYNC, from, pfpath);
+                        if (mutex != NULL)
+                        {
+                            pthread_mutex_unlock(mutex);
+                        }
+                        ff->actualCopies++;
+                    }
+                }
+                else
+                {
+                    break;
+                }
+            }
+        }
+    }
 }
 
 void Checker::resync()
