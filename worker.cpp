@@ -904,7 +904,11 @@ int Worker::doTask(task_t * task)
             logEntry += "ERROR: unknown task-id: ";
             break;
     }
-    logEntry +=  ", from: " + task->from + ", to:" + task->to;
+    logEntry +=  ", from: " + task->from;
+    if ((task->to != " ") && (task->to != ""))
+    {
+        logEntry += ", to:" + task->to;
+    }
     writeLog(logEntry);
     return 0;
 }
@@ -922,7 +926,8 @@ int Worker::getFlexStructFromPath(flexdir_t * flexdir, flexfile_t * flexfile, st
             (*flexfile).name = path.substr(len + 1);
             (*flexfile).x_path = fpath;
             (*flexfile).role=NONE;
-            (*flexfile).actualCopies = 0;
+            vector<poolfile_t> pf = getPoolFiles(flexfile);
+            (*flexfile).actualCopies = (int)pf.size();
             return 0;
         }
 

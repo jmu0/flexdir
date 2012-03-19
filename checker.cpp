@@ -22,6 +22,7 @@ void Checker::start(pthread_mutex_t * m, pthread_cond_t * c)
     while(1)
     {
         sleep(10);
+        //TODO: create timed check and repair
     }
 }
 
@@ -171,6 +172,7 @@ int Checker::repair(bool prompt)
                     if (answer == "a" || answer == "A")
                     {
                         prompt = false;
+                        answer = "y";
                     }
                     if (answer == "y" || answer == "Y")
                     {
@@ -201,6 +203,7 @@ int Checker::repair(bool prompt)
                     if (answer == "a" || answer == "A")
                     {
                         prompt = false;
+                        answer = "y";
                     }
                     if (answer == "y" || answer == "Y")
                     {
@@ -222,6 +225,7 @@ int Checker::repair(bool prompt)
                     if (answer == "a" || answer == "A")
                     {
                         prompt = false;
+                        answer = "y";
                     }
                     if (answer == "y" || answer == "Y")
                     {
@@ -243,7 +247,7 @@ int Checker::repair(bool prompt)
                             {
                                 pthread_mutex_unlock(mutex);
                             } 
-                            repairCopies(&(*ffit), &(*fit));
+                            //TODO: not needed with recursive function: repairCopies(&(*ffit), &(*fit));
                         }
                         else
                         {
@@ -271,6 +275,8 @@ int Checker::repair(bool prompt)
         {
             if (pfit->role == ORPHAN)
             {
+                //TODO: possibly more copies of the same file flagged as orphan
+                //don't ask for every copy
                 string linkPath = pfit->x_path + "/" + pfit->name;
                 string pfPath = pit->path + pfit->x_path + "/" + pfit->name;
                 if (worker->getFileExists((char *)linkPath.c_str()) == false)
@@ -289,6 +295,7 @@ int Checker::repair(bool prompt)
                     if (answer == "a" || answer == "A")
                     {
                         prompt = false;
+                        answer = "y";
                     }
                     if (answer == "y" || answer == "Y")
                     {
@@ -302,7 +309,6 @@ int Checker::repair(bool prompt)
                         {
                             pthread_mutex_unlock(mutex);
                         }
-                        //TODO: check number of copies
                     }
                 }
             }
@@ -322,6 +328,7 @@ int Checker::repair(bool prompt)
             worker->doTask(&task);
         }
     }
+    return 0;
 }
 
 void Checker::repairCopies(flexfile_t * ff, flexdir_t * fd)

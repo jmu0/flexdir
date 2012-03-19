@@ -21,7 +21,9 @@ Checker::getErrorCount	checker.h	/^        int getErrorCount();$/;"	p	class:Chec
 Checker::mutex	checker.h	/^        pthread_mutex_t * mutex;$/;"	m	class:Checker	access:private
 Checker::repair	checker.cpp	/^int Checker::repair(bool prompt)$/;"	f	class:Checker	signature:(bool prompt)
 Checker::repair	checker.h	/^        int repair(bool prompt);$/;"	p	class:Checker	access:public	signature:(bool prompt)
+Checker::repairCopies	checker.cpp	/^void Checker::repairCopies(flexfile_t * ff, flexdir_t * fd)$/;"	f	class:Checker	signature:(flexfile_t * ff, flexdir_t * fd)
 Checker::repairCopies	checker.h	/^        void repairCopies(flexfile_t * ff, flexdir_t * fd);$/;"	p	class:Checker	access:private	signature:(flexfile_t * ff, flexdir_t * fd)
+Checker::resync	checker.cpp	/^void Checker::resync()$/;"	f	class:Checker	signature:()
 Checker::resync	checker.h	/^        void resync();$/;"	p	class:Checker	access:public	signature:()
 Checker::setPoolfileRole	checker.cpp	/^int Checker::setPoolfileRole(poolfile_t poolfile, role_t role)$/;"	f	class:Checker	signature:(poolfile_t poolfile, role_t role)
 Checker::setPoolfileRole	checker.h	/^        int setPoolfileRole(poolfile_t poolfile, role_t role);$/;"	p	class:Checker	access:private	signature:(poolfile_t poolfile, role_t role)
@@ -157,10 +159,13 @@ actionRemovePoolFile	worker.h	/^        int actionRemovePoolFile(char * path);$/
 actionSyncFile	worker.cpp	/^int Worker::actionSyncFile(char * from, char * to)$/;"	f	class:Worker	signature:(char * from, char * to)
 actionSyncFile	worker.h	/^        int actionSyncFile(char * from, char * to);$/;"	p	class:Worker	access:public	signature:(char * from, char * to)
 actualCopies	worker.h	/^    int actualCopies;$/;"	m	struct:flexfile_t	access:public
+addTask	checker.cpp	/^                                w->addTask(SYNC, linktarget, ppath);$/;"	p	file:	signature:(SYNC, linktarget, ppath)
 addTask	checker.cpp	/^                            worker->addTask(DELETE, ffpath, " ");$/;"	p	file:	signature:(DELETE, ffpath, Ó)
 addTask	checker.cpp	/^                            worker->addTask(LINK, ffpath, pfpath);$/;"	p	file:	signature:(LINK, ffpath, pfpath)
 addTask	checker.cpp	/^                        worker->addTask(ADD, path, " ");$/;"	p	file:	signature:(ADD, path, Ó)
+addTask	checker.cpp	/^                        worker->addTask(DELETE, rmpath, " ");$/;"	p	file:	signature:(DELETE, rmpath, Ó)
 addTask	checker.cpp	/^                        worker->addTask(LINK, linkPath, pfPath);$/;"	p	file:	signature:(LINK, linkPath, pfPath)
+addTask	checker.cpp	/^                        worker->addTask(SYNC, from, pfpath);$/;"	p	file:	signature:(SYNC, from, pfpath)
 addTask	test/testWorker.cpp	/^            w.addTask(DELETE, t.from, " ");$/;"	p	file:	signature:(DELETE, t.from, Ó)
 addTask	test/testWorker.cpp	/^            w.addTask(DELETE, t.to, " ");$/;"	p	file:	signature:(DELETE, t.to, Ó)
 addTask	test/testWorker.cpp	/^            w.addTask(t.ID, t.from, t.to);$/;"	p	file:	signature:(t.ID, t.from, t.to)
@@ -290,16 +295,15 @@ f	worker.cpp	/^                flexdir_t f;$/;"	l
 f	worker.cpp	/^                pooldir_t f;$/;"	l
 fPath	watcher.cpp	/^                string fPath = getPathFromWatchDescriptor(event->wd);$/;"	l
 fb	worker.cpp	/^            long fb = buffer.f_bfree;$/;"	l
-fd	checker.cpp	/^                        flexdir_t * fd;$/;"	l
 fd	test/testWorker.cpp	/^    flexdir_t fd;$/;"	l
 fd	watcher.cpp	/^    int length, i = 0, n = 0, fd;$/;"	l
 fd	worker.cpp	/^    flexdir_t fd;$/;"	l
 fdPath	watcher.cpp	/^                string fdPath = fPath + "\/" + (string)event->name;$/;"	l
-ff	checker.cpp	/^                        flexfile_t * ff;$/;"	l
 ff	test/testWorker.cpp	/^    flexfile_t ff;$/;"	l
 ff	worker.cpp	/^    flexfile_t ff;$/;"	l
 ffit	checker.cpp	/^    vector<flexfile_t>::iterator ffit;$/;"	l
 ffpath	checker.cpp	/^    string rmpath, linktarget, pfpath, ffpath, answer = "y";$/;"	l
+ffpath	checker.cpp	/^    string rmpath, pfpath, ffpath, from;$/;"	l
 file	test/testWorker.cpp	/^            string file = "touch " + t.from;$/;"	l
 file	worker.cpp	/^    ifstream file;$/;"	l
 fileTest	test/testWorker.cpp	/^void fileTest()$/;"	f	signature:()
@@ -325,6 +329,7 @@ flexfile_t::x_path	worker.h	/^    string x_path;$/;"	m	struct:flexfile_t	access:
 fpath	worker.cpp	/^        string fpath = (*it).path;$/;"	l
 fpath	worker.cpp	/^        string fpath = (*pit).path;$/;"	l
 freeMB	worker.h	/^    long freeMB;$/;"	m	struct:pooldir_t	access:public
+from	checker.cpp	/^    string rmpath, pfpath, ffpath, from;$/;"	l
 from	worker.h	/^    string from;$/;"	m	struct:task_t	access:public
 fromPath	worker.cpp	/^                    string fromPath, toPath;$/;"	l
 getErrorCount	checker.cpp	/^int Checker::getErrorCount()$/;"	f	class:Checker	signature:()
@@ -377,6 +382,7 @@ length	watcher.cpp	/^    int length, i = 0, n = 0, fd;$/;"	l
 line	worker.cpp	/^        string line;$/;"	l
 lineNo	worker.cpp	/^        size_t lineNo = 0;$/;"	l
 linkPath	checker.cpp	/^                string linkPath = pfit->x_path + "\/" + pfit->name;$/;"	l
+linktarget	checker.cpp	/^                string linktarget = w->getLinkTarget((char*)path.c_str());$/;"	l
 linktarget	checker.cpp	/^    string rmpath, linktarget, pfpath, ffpath, answer = "y";$/;"	l
 linktst	test/testWorker.cpp	/^void linktst(string testlink)$/;"	f	signature:(string testlink)
 linktst	test/testWorker.cpp	/^void linktst(string testlink);$/;"	p	file:	signature:(string testlink)
@@ -432,6 +438,7 @@ pd	worker.cpp	/^    pooldir_t pd;$/;"	l
 pdi	checker.cpp	/^    vector<pooldir_t>::iterator pdi;$/;"	l
 pf	test/testWorker.cpp	/^    poolfile_t pf;$/;"	l
 pf	worker.cpp	/^            poolfile_t pf;$/;"	l
+pf	worker.cpp	/^            vector<poolfile_t> pf = getPoolFiles(flexfile);$/;"	l
 pf	worker.cpp	/^    poolfile_t pf;$/;"	l
 pf	worker.cpp	/^    vector<poolfile_t>::iterator pf;$/;"	l
 pfPath	checker.cpp	/^                string pfPath = pit->path + pfit->x_path + "\/" + pfit->name;$/;"	l
@@ -439,6 +446,7 @@ pfi	checker.cpp	/^    vector<poolfile_t>::iterator pfi;$/;"	l
 pfit	checker.cpp	/^    vector<poolfile_t>::iterator pfit;$/;"	l
 pfit	worker.cpp	/^    vector<poolfile_t>::iterator pfit;$/;"	l
 pfpath	checker.cpp	/^    string rmpath, linktarget, pfpath, ffpath, answer = "y";$/;"	l
+pfpath	checker.cpp	/^    string rmpath, pfpath, ffpath, from;$/;"	l
 pid	flexdird.cpp	/^    pid_t pid, sid;$/;"	l
 pit	checker.cpp	/^    vector<pooldir_t>::iterator pit;$/;"	l
 pit	worker.cpp	/^    vector<pooldir_t>::iterator pit;$/;"	l
@@ -459,8 +467,10 @@ poolfile_t::role	worker.h	/^    role_t role;$/;"	m	struct:poolfile_t	access:publ
 poolfile_t::x_path	worker.h	/^    string x_path;$/;"	m	struct:poolfile_t	access:public
 poolfiles	checker.cpp	/^    vector<poolfile_t> poolfiles;$/;"	l
 poolfiles	worker.cpp	/^    vector<poolfile_t> poolfiles;$/;"	l
+pop	checker.cpp	/^            s->tasks.pop();$/;"	p	file:	signature:()
 pop	worker.cpp	/^            settings.tasks.pop();$/;"	p	file:	signature:()
 pp	checker.cpp	/^                   string pp = (*pfi).p_path + (*pfi).x_path + "\/" + (*pfi).name;$/;"	l
+ppath	checker.cpp	/^            string ppath = "";$/;"	l
 ppath	worker.cpp	/^    string ppath;$/;"	l
 printFileStructure	flexdir.cpp	/^    w.printFileStructure();$/;"	p	file:	signature:()
 printFileStructure	flexdir.cpp	/^void printFileStructure()$/;"	f	signature:()
@@ -487,14 +497,13 @@ removeError	worker.cpp	/^                    bool removeError = false;$/;"	l
 renameError	worker.cpp	/^                    bool renameError = false;$/;"	l
 repair	checker.cpp	/^int Checker::repair(bool prompt)$/;"	f	class:Checker	signature:(bool prompt)
 repair	checker.h	/^        int repair(bool prompt);$/;"	p	class:Checker	access:public	signature:(bool prompt)
-repair	flexdir.cpp	/^    ch.repair(true);$/;"	p	file:	signature:(true)
 repair	flexdir.cpp	/^void repair()$/;"	f	signature:()
 repair	flexdir.cpp	/^void repair();$/;"	p	file:	signature:()
+repairCopies	checker.cpp	/^void Checker::repairCopies(flexfile_t * ff, flexdir_t * fd)$/;"	f	class:Checker	signature:(flexfile_t * ff, flexdir_t * fd)
 repairCopies	checker.h	/^        void repairCopies(flexfile_t * ff, flexdir_t * fd);$/;"	p	class:Checker	access:private	signature:(flexfile_t * ff, flexdir_t * fd)
 rest	worker.cpp	/^            string rest = path.substr(len);$/;"	l
+resync	checker.cpp	/^void Checker::resync()$/;"	f	class:Checker	signature:()
 resync	checker.h	/^        void resync();$/;"	p	class:Checker	access:public	signature:()
-resync	flexdir.cpp	/^    ch.resync();$/;"	p	file:	signature:()
-resync	flexdir.cpp	/^void resync()$/;"	f	signature:()
 resync	flexdir.cpp	/^void resync();$/;"	p	file:	signature:()
 ret	worker.cpp	/^    int ret = 0;$/;"	l
 ret	worker.cpp	/^    string ret(buffer);$/;"	p	file:	signature:(buffer)
@@ -507,11 +516,14 @@ retwa	test/testWatcher.cpp	/^    int retwa, retch, retwo;$/;"	l
 retwo	flexdird.cpp	/^    int retwa, retch, retwo;$/;"	l
 retwo	test/testWatcher.cpp	/^    int retwa, retch, retwo;$/;"	l
 rmpath	checker.cpp	/^    string rmpath, linktarget, pfpath, ffpath, answer = "y";$/;"	l
+rmpath	checker.cpp	/^    string rmpath, pfpath, ffpath, from;$/;"	l
 role	worker.h	/^    role_t role;$/;"	m	struct:flexfile_t	access:public
 role	worker.h	/^    role_t role;$/;"	m	struct:poolfile_t	access:public
 role2string	worker.cpp	/^string Worker::role2string(role_t role)$/;"	f	class:Worker	signature:(role_t role)
 role2string	worker.h	/^        string role2string(role_t role);$/;"	p	class:Worker	access:public	signature:(role_t role)
 role_t	worker.h	/^enum role_t { NONE, FLEXFILE, NEW, PRIMARY, SECONDARY, ORPHAN, COPIES };$/;"	g
+s	checker.cpp	/^        settings_t * s = w->getSettings();$/;"	l
+s	checker.cpp	/^        settings_t * s = worker->getSettings();$/;"	l
 s	checker.cpp	/^    settings_t * s = worker->getSettings();$/;"	l
 s	test/testWorker.cpp	/^settings_t * s;$/;"	v
 s	watcher.cpp	/^                        settings_t * s = worker->getSettings();$/;"	l
@@ -565,6 +577,7 @@ symlinkTest	test/testWorker.cpp	/^void symlinkTest(){$/;"	f	signature:()
 t	test/testWorker.cpp	/^    task_t t;$/;"	l
 target	checker.cpp	/^                string target = w->getLinkTarget((char*)p.c_str());$/;"	l
 target	worker.cpp	/^                            string target = dirs.begin()->path + fd.path + "\/" +ff.name;$/;"	l
+task	checker.cpp	/^            task_t task = s->tasks.front();$/;"	l
 task	worker.cpp	/^            task_t task = settings.tasks.front();$/;"	l
 task	worker.cpp	/^    task_t task;$/;"	l
 taskID_t	worker.h	/^enum taskID_t { ADD, SYNC, DELETE, REMOVE, RENAME, LINK };$/;"	g

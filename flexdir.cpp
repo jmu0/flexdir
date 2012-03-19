@@ -18,9 +18,8 @@ void resync();
 
 int main(int argc, char * argv[])
 {
-    Worker wo = w; //TODO: remove this line
     //print log entries
-    wo.getSettings()->verbose = true;
+    w.getSettings()->verbose = true;
     //print help message when no arguments
     if (argc == 1)
     {
@@ -31,7 +30,7 @@ int main(int argc, char * argv[])
         for (int i = 1; i < argc; i++)
         {
             string arg = (string)argv[i];
-            if (arg == "-s")
+            if (arg == "-t")
             {
                 w.printSettings();
             }
@@ -43,7 +42,7 @@ int main(int argc, char * argv[])
             {
                 printHelp();
             }
-            else if (arg == "-t")
+            else if (arg == "-s")
             {
                 printStatus();
             }
@@ -66,8 +65,8 @@ void printHelp()
     cout << "-f : print filesystem as xml" << endl;
     cout << "-h : print this page" << endl;
     cout << "-r : repair errors" << endl;
-    cout << "-s : print settings as xml" << endl;
-    cout << "-t : print status" << endl;
+    cout << "-s : print status" << endl;
+    cout << "-t : print settings as xml" << endl;
 }
 
 void printStatus()
@@ -98,7 +97,13 @@ void repair()
 {
     w.loadFileStructure();
     ch.analyze();
-    ch.repair(true);
+    if(ch.getErrorCount() > 0)
+    {
+        if(ch.repair(true)==0)
+        {
+            repair();
+        }
+    }
 }
 
 void resync()
