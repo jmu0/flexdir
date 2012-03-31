@@ -533,6 +533,7 @@ void Checker::resync()
         {
             string path = ffit->x_path + "/" + ffit->name;
             string ppath = "";
+            string synctarget = "";
             if (worker->getIsLink((char*)path.c_str()))
             {
                 string linktarget = worker->getLinkTarget((char*)path.c_str());
@@ -543,14 +544,15 @@ void Checker::resync()
                     {
                         for (pfit = poolfiles.begin(); pfit != poolfiles.end(); pfit++)
                         {
-                            ppath = pfit->p_path + pfit->x_path; //TODO: remove this + "/" + pfit->name;
+                            ppath = pfit->p_path + pfit->x_path + "/" + pfit->name;
+                            synctarget = pfit->p_path + pfit->x_path;
                             if (linktarget != ppath)
                             {
                                 if (mutex != NULL)
                                 {
                                     pthread_mutex_lock(mutex);
                                 }
-                                worker->addTask(SYNC, linktarget, ppath);
+                                worker->addTask(SYNC, linktarget, synctarget);
                                 if (mutex != NULL)
                                 {
                                     pthread_mutex_unlock(mutex);
