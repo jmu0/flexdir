@@ -543,7 +543,7 @@ void Checker::resync()
                     {
                         for (pfit = poolfiles.begin(); pfit != poolfiles.end(); pfit++)
                         {
-                            ppath = pfit->p_path + pfit->x_path + "/" + pfit->name;
+                            ppath = pfit->p_path + pfit->x_path; //TODO: remove this + "/" + pfit->name;
                             if (linktarget != ppath)
                             {
                                 if (mutex != NULL)
