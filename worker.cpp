@@ -591,12 +591,17 @@ string Worker::getLinkTarget(char * path)
 
 int Worker::actionMoveFile(char * from, char * to)
 {    
-    return rename(from, to);
+    actionDeleteFile(to);
+    string tmpTo = (string) to;
+    //tmpTo = tmpTo.substr(0, tmpTo.find_last_of("/"));
+    string com = "mv '" + (string)from + "' '" + tmpTo + "'";
+    return system((char*) com.c_str());
 }
 
 int Worker::actionDeleteFile(char * path)
 {
-    return remove(path);
+    string com = "rm -r '" + (string)path + "'";
+    return system((char*)com.c_str());
 }
 
 int Worker::actionCopyFile(char * from, char * to)//TODO: use rsync
@@ -608,14 +613,16 @@ int Worker::actionCopyFile(char * from, char * to)//TODO: use rsync
 
 int Worker::actionSyncFile(char * from, char * to)
 {
-    string com = "rsync --recursive --perms --delete --update \"" + (string)from + "\" \"" + (string)to +"\"";
+    string tmpTo = (string) to;
+    tmpTo = tmpTo.substr(0, tmpTo.find_last_of("/"));
+    string com = "rsync --recursive --perms --delete --update \"" + (string)from + "\" \"" + tmpTo +"\"";
     //TODO: find alternative for system call
     return system((char *) com.c_str());
 }
 
 int Worker::actionCreateLink(char * target, char * linkname)
 {
-    string com = "cp -rsf '" + (string)target + "' '" + (string)linkname + "'";
+    string com = "ln -s '" + (string)target + "' '" + (string)linkname + "'";
     //TODO: find alternative for system call
     return system((char *) com.c_str()); 
 }
@@ -659,7 +666,6 @@ int Worker::actionRemovePoolFile(char * path)
         if (pathError == false)
         {
             //move file to .deleted dir in pooldir root
-            delPath += "/" + pf.name;
             if (actionMoveFile(path, (char*)delPath.c_str()) == 0)
             {
                 return 0;

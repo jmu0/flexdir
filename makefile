@@ -30,9 +30,8 @@ clean:
 install: 
 	install $(daemon) $(dirInstall)
 	install $(cli) $(dirInstall)
-	install $(cli).conf $(dirConfig)
 	install initscript $(dirInit)/$(daemon)
 
 uninstall: 
-	rm $(dirInstall)/$(cli) $(dirInstall)/$(daemon) $(dirInit)/$(daemon) $(dirConfig)/$(cli).conf
+	rm $(dirInstall)/$(cli) $(dirInstall)/$(daemon) $(dirInit)/$(daemon) 
     	
