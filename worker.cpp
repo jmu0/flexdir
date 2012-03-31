@@ -593,20 +593,21 @@ int Worker::actionMoveFile(char * from, char * to)
 {    
     actionDeleteFile(to);
     string tmpTo = (string) to;
+    string tmpFrom = (string) from;
     //tmpTo = tmpTo.substr(0, tmpTo.find_last_of("/"));
-    string com = "mv '" + (string)from + "' '" + tmpTo + "'";
+    string com = "mv \"" + (string)from + "\" \"" + tmpTo + "\"";
     return system((char*) com.c_str());
 }
 
 int Worker::actionDeleteFile(char * path)
 {
-    string com = "rm -r '" + (string)path + "'";
+    string com = "rm -r \"" + (string)path + "\"";
     return system((char*)com.c_str());
 }
 
 int Worker::actionCopyFile(char * from, char * to)//TODO: use rsync
 {
-    string com = "cp -ruf '" + (string)from + "' '" + (string)to + "'"; 
+    string com = "cp -ruf \"" + (string)from + "\" \"" + (string)to + "\""; 
     //TODO: find alternative for system call
     return system((char *) com.c_str());
 }
@@ -622,7 +623,7 @@ int Worker::actionSyncFile(char * from, char * to)
 
 int Worker::actionCreateLink(char * target, char * linkname)
 {
-    string com = "ln -s '" + (string)target + "' '" + (string)linkname + "'";
+    string com = "ln -s \"" + (string)target + "\" \"" + (string)linkname + "\"";
     //TODO: find alternative for system call
     return system((char *) com.c_str()); 
 }
@@ -641,7 +642,7 @@ int Worker::actionChangeLink(char * link, char * newTarget)
 
 int Worker::actionCreatedir(char * path)
 {
-    string cmd = "mkdir -p '" + (string)path + "'";
+    string cmd = "mkdir -p \"" +  (string)path + "\"";
     //TODO: find alternative for system call (mkdir not recursive)
     return system((char*)cmd.c_str());
 }
