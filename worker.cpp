@@ -14,8 +14,8 @@
 #include <algorithm> //sort vectors
 #include <pthread.h> //posix threads
 
-#define SETTINGS "/home/jos/git/flexdir/flexdir.conf"
-#define DEF_LOGFILE "/home/jos/git/flexdir/flexdir.log"
+#define SETTINGS "/etc/flexdir.conf"
+#define DEF_LOGFILE "/var/log/flexdir.log"
 #define MAX_LOAD_AVG 1
 #define MAX_LOAD_SLEEP 5
 #define MAX_WORKER_THREADS 5
