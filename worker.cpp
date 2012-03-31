@@ -25,6 +25,8 @@
 #define DAILY_REPAIR_TIME "0:00"
 #define ALARM_THRESHOLD 100
 #define VERBOSE true
+#define USER_NAME "root"
+#define USER_GROUP "root"
 
 using namespace std;
 
@@ -62,6 +64,8 @@ void Worker::loadSettings()
     settings.dailyRepair = DAILY_REPAIR;
     settings.dailyRepairTime = DAILY_REPAIR_TIME;
     settings.alarmThreshold = ALARM_THRESHOLD;
+    settings.userName = USER_NAME;
+    settings.userGroup = USER_GROUP;
     //load settings file
     ifstream file;
     file.open(SETTINGS);
@@ -164,7 +168,15 @@ void Worker::loadSettings()
                 }
 
             }
-            else if(key == "flexdir")
+            else if (key == "userName")
+            {
+                settings.userName = value;
+            }
+            else if (key == "userGroup")
+            {
+                settings.userGroup = value;
+            }
+            else if (key == "flexdir")
             {
                 flexdir_t f;
                 f.path = value.substr(0, value.find_last_of(' '));
@@ -184,7 +196,7 @@ void Worker::loadSettings()
                     writeLog("ERROR: settings: flexdir " + (string)f.path + " doesn't exist");
                 }
             }
-            else if(key == "pooldir")
+            else if (key == "pooldir")
             {
                 pooldir_t f;
                 if (getFileExists((char*) value.c_str()))
@@ -252,6 +264,8 @@ void Worker::printSettings()
     cout << "  <dailyRepair>" << settings.dailyRepair << "</dailyRepair>" << endl;
     cout << "  <dailyRepairTime>" << settings.dailyRepairTime << "</dailyRepairTime>" << endl;
     cout << "  <alarmThreshold>" << settings.alarmThreshold << "</alarmThreshold>" << endl;
+    cout << "  <userName>" << settings.userName << "</userName>" << endl;
+    cout << "  <userGroup>" << settings.userGroup << "</userGroup>" << endl;
     vector<flexdir_t>::iterator ixf;
     cout << "  <flexdirs>" << endl;
     for(ixf = settings.flexdirs.begin(); ixf != settings.flexdirs.end(); ixf++)
@@ -616,16 +630,24 @@ int Worker::actionSyncFile(char * from, char * to)
 {
     string tmpTo = (string) to;
     tmpTo = tmpTo.substr(0, tmpTo.find_last_of("/"));
-    string com = "rsync --recursive --perms --delete --update \"" + (string)from + "\" \"" + tmpTo +"\"";
+    string com = "rsync --recursive --owner --group --perms --delete --update \"" + (string)from + "\" \"" + tmpTo +"\"";
     //TODO: find alternative for system call
     return system((char *) com.c_str());
 }
 
 int Worker::actionCreateLink(char * target, char * linkname)
 {
+    int ret = 0;
     string com = "ln -s \"" + (string)target + "\" \"" + (string)linkname + "\"";
     //TODO: find alternative for system call
-    return system((char *) com.c_str()); 
+    ret = system((char *) com.c_str()); 
+    com = "chown -R " + settings.userName + ":" + settings.userGroup + " \"" + (string)linkname + "\"";
+    cout << com <<  endl; //TODO: remove this line
+    if (ret == 0)
+    {
+        ret = system((char*)com.c_str());
+    }
+    return ret;
 }
 
 int Worker::actionChangeLink(char * link, char * newTarget)

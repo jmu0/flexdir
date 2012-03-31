@@ -67,6 +67,8 @@ struct settings_t
     bool dailyRepair;
     string dailyRepairTime;
     int alarmThreshold;
+    string userName;
+    string userGroup;
 };
 
 
