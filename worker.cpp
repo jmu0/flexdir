@@ -19,8 +19,10 @@
 #define MAX_LOAD_AVG 1
 #define MAX_LOAD_SLEEP 5
 #define MAX_WORKER_THREADS 5
-#define DAILY_CHECK false
-#define DAILY_CHECK_TIME "0:00"
+#define DAILY_SYNC false
+#define DAILY_SYNC_TIME "0:00"
+#define DAILY_REPAIR false
+#define DAILY_REPAIR_TIME "0:00"
 #define ALARM_THRESHOLD 100
 #define VERBOSE true
 
@@ -55,8 +57,10 @@ void Worker::loadSettings()
     settings.maxWorkerThreads = MAX_WORKER_THREADS;
     settings.verbose = VERBOSE;
     settings.deleteWaitFlag = false;
-    settings.dailyCheck = DAILY_CHECK; 
-    settings.dailyCheckTime = DAILY_CHECK_TIME; 
+    settings.dailySync = DAILY_SYNC; 
+    settings.dailySyncTime = DAILY_SYNC_TIME; 
+    settings.dailyRepair = DAILY_REPAIR;
+    settings.dailyRepairTime = DAILY_REPAIR_TIME;
     settings.alarmThreshold = ALARM_THRESHOLD;
     //load settings file
     ifstream file;
@@ -120,20 +124,35 @@ void Worker::loadSettings()
                     writeLog("ERROR: settings: could not read maxWorkerThreads, set default");
                 }
             }
-            else if(key == "dailyCheck")
+            else if(key == "dailySync")
             {
                 if (value == "true")
                 {
-                    settings.dailyCheck = true;
+                    settings.dailySync = true;
                 }
                 else
                 {
-                    settings.dailyCheck = false;
+                    settings.dailySync = false;
                 }
             }
-            else if(key == "dailyCheckTime")
+            else if(key == "dailySyncTime")
             {
-                settings.dailyCheckTime = value;
+                settings.dailySyncTime = value;
+            }
+            else if (key == "dailyRepair")
+            {
+                if (value == "true")
+                {
+                    settings.dailyRepair = true;
+                }
+                else
+                {
+                    settings.dailyRepair = false;
+                }
+            }
+            else if (key == "dailyRepairTime")
+            {
+                settings.dailyRepairTime = value;
             }
             else if(key == "alarmThreshold")
             {
@@ -228,8 +247,10 @@ void Worker::printSettings()
     cout << "  <maxLoadAverage>" << settings.maxLoadAverage << "</maxLoadAverage>" << endl;
     cout << "  <maxLoadSleep>" << settings.maxLoadSleep << "</maxLoadSleep>" << endl;
     cout << "  <maxWorkerThreads>" << settings.maxWorkerThreads << "</maxWorkerThreads>" << endl;
-    cout << "  <dailyCheck>" << settings.dailyCheck << "</dailyCheck>" << endl;
-    cout << "  <dailyCheckTime>" << settings.dailyCheckTime << "</dailyCheckTime>" << endl;
+    cout << "  <dailySync>" << settings.dailySync << "</dailySync>" << endl;
+    cout << "  <dailySyncTime>" << settings.dailySyncTime << "</dailyCheckTime>" << endl;
+    cout << "  <dailyRepair>" << settings.dailyRepair << "</dailyRepair>" << endl;
+    cout << "  <dailyRepairTime>" << settings.dailyRepairTime << "</dailyRepairTime>" << endl;
     cout << "  <alarmThreshold>" << settings.alarmThreshold << "</alarmThreshold>" << endl;
     vector<flexdir_t>::iterator ixf;
     cout << "  <flexdirs>" << endl;
@@ -667,8 +688,13 @@ void Worker::startWorker(pthread_mutex_t * mutex, pthread_cond_t * condition)
         pthread_mutex_lock(mutex);
         if (settings.tasks.size() == 0)
         {
-            //DEBUG: writeLog("WORKER: waiting...");
+            writeLog("WORKER: waiting...");
             pthread_cond_wait(condition, mutex);
+            string l = "WORKER: working, ";
+            stringstream ss;
+            ss <<  settings.tasks.size();
+            l += ss.str() + " tasks...";
+            writeLog(l);
         }
         pthread_mutex_unlock(mutex);
         while(settings.tasks.size() > 0)

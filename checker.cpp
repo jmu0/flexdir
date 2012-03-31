@@ -1,8 +1,10 @@
 #include "checker.h"
 #include "worker.h"
 #include <iostream>
+#include <sstream> //stringstream
 #include <string>
 #include <pthread.h>
+#include <time.h> //getNextJob
 
 using namespace std;
 
@@ -19,10 +21,128 @@ void Checker::start(pthread_mutex_t * m, pthread_cond_t * c)
 {
     mutex = m;
     condition = c;
+    string job = "nojob";
+    int timeToNextJob = 1;
     while(1)
     {
-        sleep(10);
-        //TODO: create timed check and repair
+        getNextJob(&job, &timeToNextJob);
+        sleep(timeToNextJob);
+        if (job == "repair")
+        {
+            worker->writeLog("CHECKER: start repair...");
+            doRepair();
+            worker->writeLog("CHECKER: finished repair...");
+        }
+        else if (job == "resync")
+        {
+            worker->loadFileStructure();
+            resync();
+        }
+    }
+}
+
+void Checker::doRepair()
+{
+    worker->loadFileStructure();
+    analyze();
+    settings_t * s = worker->getSettings();
+    int errors = getErrorCount();
+    if(errors > 0)
+    {
+        if (errors <= s->alarmThreshold)
+        {
+            if(repair(false)==0)
+            {
+                doRepair();
+            }
+        }
+        else
+        {
+            worker->writeLog("CHECKER: ALARM number of errors larger then alarm threshhold!");
+        }
+    }
+}
+
+void Checker::debug()
+{
+    //TODO: remove this function, used for testing new functions
+    string job = "no";
+    int t = 0;
+    getNextJob(&job, &t);
+    cout << "job: " << job << endl;
+    cout << "time: " << t << endl;
+}
+
+void Checker::getNextJob(string * job, int * timeToNextJob)
+{
+    *job = "nojob";
+    *timeToNextJob = 86400;
+    time_t now;
+    time_t next;
+    int repTime;
+    struct tm * nowInfo;
+    struct tm * tInfo;
+    string t, h, m;
+    settings_t * settings = worker->getSettings();
+    time(&now);
+    nowInfo = localtime(&now);
+    if (settings->dailySync == true)
+    {
+        *job = "resync";
+        tInfo = localtime(&now);
+        t = settings->dailySyncTime;
+        h = t.substr(0, t.find_first_of(':'));
+        m = t.substr(t.find_first_of(':') + 1);
+        istringstream hss(h);
+        istringstream mss(m);
+        if (!(hss >> tInfo->tm_hour))
+        {
+            *job = "nojob";
+        }
+        if (!(mss >> tInfo->tm_min))
+        {
+            *job = "nojob";
+        }
+        next = mktime(tInfo);
+        *timeToNextJob = next - now;
+        if (now > next)
+        {
+            *timeToNextJob += 86400;
+        }
+    }
+    if (settings->dailyRepair == true)
+    {
+        string repJob = "repair";
+        tInfo = localtime(&now);
+        t = settings->dailyRepairTime;
+        h = t.substr(0, t.find_first_of(':'));
+        m = t.substr(t.find_first_of(':') + 1);
+        istringstream hsr(h);
+        istringstream msr(m);
+        if (!(hsr >> tInfo->tm_hour))
+        {
+            repJob = "nojob";
+        }
+        if (!(msr >> tInfo->tm_min))
+        {
+            repJob = "nojob";
+        }
+        next = mktime(tInfo);
+        repTime = next - now;
+        if (now > next)
+        {
+            repTime += 86400;
+        }
+        if (repTime < *timeToNextJob)
+        {
+            *job = repJob;
+            *timeToNextJob = repTime;
+        }
+    }
+    if (*timeToNextJob < 1)
+    {
+        *timeToNextJob = 1;
+        *job = "nojob";
     }
 }
 
@@ -46,14 +166,14 @@ void Checker::analyze()
                 poolfiles = worker->getPoolFiles(&(*fl));
                 for(pfi = poolfiles.begin(); pfi != poolfiles.end(); pfi++)
                 {
-                   string pp = (*pfi).p_path + (*pfi).x_path + "/" + (*pfi).name;
-                   if (pp == target){
-                       setPoolfileRole((*pfi), PRIMARY);
-                   }
-                   else
-                   { 
-                       setPoolfileRole((*pfi), SECONDARY);
-                   }
+                    string pp = (*pfi).p_path + (*pfi).x_path + "/" + (*pfi).name;
+                    if (pp == target){
+                        setPoolfileRole((*pfi), PRIMARY);
+                    }
+                    else
+                    { 
+                        setPoolfileRole((*pfi), SECONDARY);
+                    }
                 }
                 (*fl).role = FLEXFILE;
                 if (w->getFileExists((char*)target.c_str()))
@@ -247,7 +367,6 @@ int Checker::repair(bool prompt)
                             {
                                 pthread_mutex_unlock(mutex);
                             } 
-                            //TODO: not needed with recursive function: repairCopies(&(*ffit), &(*fit));
                         }
                         else
                         {
@@ -407,20 +526,19 @@ void Checker::resync()
     vector<poolfile_t>::iterator pfit;
     vector<flexfile_t>::iterator ffit;
     settings_t * s = worker->getSettings();
-    Worker * w = worker;
-    w->writeLog("RESYNC: start synchronizing copies");
+    worker->writeLog("CHECKER: start synchronizing copies");
     for (fit = s->flexdirs.begin(); fit != s->flexdirs.end(); fit++)
     {
         for (ffit = fit->files.begin(); ffit != fit->files.end(); ffit++)
         {
             string path = ffit->x_path + "/" + ffit->name;
             string ppath = "";
-            if (w->getIsLink((char*)path.c_str()))
+            if (worker->getIsLink((char*)path.c_str()))
             {
-                string linktarget = w->getLinkTarget((char*)path.c_str());
-                if (w->getFileExists((char*)linktarget.c_str()))
+                string linktarget = worker->getLinkTarget((char*)path.c_str());
+                if (worker->getFileExists((char*)linktarget.c_str()))
                 {
-                    poolfiles = w->getPoolFiles(&(*ffit));
+                    poolfiles = worker->getPoolFiles(&(*ffit));
                     if (poolfiles.size() > 0)
                     {
                         for (pfit = poolfiles.begin(); pfit != poolfiles.end(); pfit++)
@@ -432,7 +550,7 @@ void Checker::resync()
                                 {
                                     pthread_mutex_lock(mutex);
                                 }
-                                w->addTask(SYNC, linktarget, ppath);
+                                worker->addTask(SYNC, linktarget, ppath);
                                 if (mutex != NULL)
                                 {
                                     pthread_mutex_unlock(mutex);
@@ -442,17 +560,17 @@ void Checker::resync()
                     }
                     else
                     {
-                        w->writeLog("RESYNC: FAILED no poolfiles found for: " + path);
+                        worker->writeLog("CHECKER: FAILED no poolfiles found for: " + path);
                     }
                 }
                 else
                 {
-                    w->writeLog("RESYNC: FAILED linktarget does not exist: " + linktarget);
+                    worker->writeLog("CHECKER: FAILED linktarget does not exist: " + linktarget);
                 }
             }
             else
             {
-                w->writeLog("RESYNC: not a symlink: " + path);
+                worker->writeLog("CHECKER: not a symlink: " + path);
             }
         }
     }
@@ -462,13 +580,13 @@ void Checker::resync()
     }
     else
     {
-        settings_t * s = w->getSettings();
+        settings_t * s = worker->getSettings();
         while(s->tasks.size() > 0)
         {
             task_t task = s->tasks.front();
             s->tasks.pop();
-            w->doTask(&task);
+            worker->doTask(&task);
         }
     }
-    w->writeLog("RESYNC: finished synchronizing copies");
+    worker->writeLog("CHECKER: finished synchronizing copies");
 }

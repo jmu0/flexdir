@@ -30,7 +30,11 @@ int main(int argc, char * argv[])
         for (int i = 1; i < argc; i++)
         {
             string arg = (string)argv[i];
-            if (arg == "-t")
+            if (arg == "-d")
+            {
+                ch.debug();
+            }
+            else if (arg == "-t")
             {
                 w.printSettings();
             }
@@ -67,6 +71,7 @@ void printHelp()
     cout << "-r : repair errors" << endl;
     cout << "-s : print status" << endl;
     cout << "-t : print settings as xml" << endl;
+    cout << "-y : resync extra copies" << endl;
 }
 
 void printStatus()

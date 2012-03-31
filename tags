@@ -5,7 +5,7 @@
 !_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
 !_TAG_PROGRAM_VERSION	5.8	//
 ADD	worker.h	/^enum taskID_t { ADD, SYNC, DELETE, REMOVE, RENAME, LINK };$/;"	e	enum:taskID_t
-ALARM_THRESHOLD	worker.cpp	24;"	d	file:
+ALARM_THRESHOLD	worker.cpp	26;"	d	file:
 CHECKER_H	checker.h	2;"	d
 COPIES	worker.h	/^enum role_t { NONE, FLEXFILE, NEW, PRIMARY, SECONDARY, ORPHAN, COPIES };$/;"	e	enum:role_t
 Checker	checker.cpp	/^Checker::Checker(Worker * w)$/;"	f	class:Checker	signature:(Worker * w)
@@ -16,8 +16,12 @@ Checker::Checker	checker.h	/^        Checker(Worker * w);$/;"	p	class:Checker	ac
 Checker::analyze	checker.cpp	/^void Checker::analyze()$/;"	f	class:Checker	signature:()
 Checker::analyze	checker.h	/^        void analyze();$/;"	p	class:Checker	access:public	signature:()
 Checker::condition	checker.h	/^        pthread_cond_t * condition;$/;"	m	class:Checker	access:private
+Checker::debug	checker.cpp	/^void Checker::debug()$/;"	f	class:Checker	signature:()
+Checker::debug	checker.h	/^        void debug(); \/\/TODO: remove this function$/;"	p	class:Checker	access:public	signature:()
 Checker::getErrorCount	checker.cpp	/^int Checker::getErrorCount()$/;"	f	class:Checker	signature:()
 Checker::getErrorCount	checker.h	/^        int getErrorCount();$/;"	p	class:Checker	access:public	signature:()
+Checker::getNextJob	checker.cpp	/^void Checker::getNextJob(string * job, int * timeToNextJob)$/;"	f	class:Checker	signature:(string * job, int * timeToNextJob)
+Checker::getNextJob	checker.h	/^        void getNextJob(string * job, int * timeToNextJob);$/;"	p	class:Checker	access:private	signature:(string * job, int * timeToNextJob)
 Checker::mutex	checker.h	/^        pthread_mutex_t * mutex;$/;"	m	class:Checker	access:private
 Checker::repair	checker.cpp	/^int Checker::repair(bool prompt)$/;"	f	class:Checker	signature:(bool prompt)
 Checker::repair	checker.h	/^        int repair(bool prompt);$/;"	p	class:Checker	access:public	signature:(bool prompt)
@@ -32,8 +36,10 @@ Checker::start	checker.h	/^        void start(pthread_mutex_t * m, pthread_cond_
 Checker::worker	checker.h	/^        Worker * worker;$/;"	m	class:Checker	access:private
 Checker::~Checker	checker.cpp	/^Checker::~Checker()$/;"	f	class:Checker	signature:()
 Checker::~Checker	checker.h	/^        ~Checker();$/;"	p	class:Checker	access:public	signature:()
-DAILY_CHECK	worker.cpp	22;"	d	file:
-DAILY_CHECK_TIME	worker.cpp	23;"	d	file:
+DAILY_REPAIR	worker.cpp	24;"	d	file:
+DAILY_REPAIR_TIME	worker.cpp	25;"	d	file:
+DAILY_SYNC	worker.cpp	22;"	d	file:
+DAILY_SYNC_TIME	worker.cpp	23;"	d	file:
 DEF_LOGFILE	worker.cpp	18;"	d	file:
 DELETE	worker.h	/^enum taskID_t { ADD, SYNC, DELETE, REMOVE, RENAME, LINK };$/;"	e	enum:taskID_t
 EVENT_BUF_LEN	watcher.cpp	13;"	d	file:
@@ -53,7 +59,7 @@ RENAME	worker.h	/^enum taskID_t { ADD, SYNC, DELETE, REMOVE, RENAME, LINK };$/;"
 SECONDARY	worker.h	/^enum role_t { NONE, FLEXFILE, NEW, PRIMARY, SECONDARY, ORPHAN, COPIES };$/;"	e	enum:role_t
 SETTINGS	worker.cpp	17;"	d	file:
 SYNC	worker.h	/^enum taskID_t { ADD, SYNC, DELETE, REMOVE, RENAME, LINK };$/;"	e	enum:taskID_t
-VERBOSE	worker.cpp	25;"	d	file:
+VERBOSE	worker.cpp	27;"	d	file:
 WATCHER_H	watcher.h	2;"	d
 WORKER_H	worker.h	2;"	d
 Watcher	watcher.cpp	/^Watcher::Watcher(Worker * w)$/;"	f	class:Watcher	signature:(Worker * w)
@@ -213,8 +219,13 @@ condition	watcher.h	/^        pthread_cond_t * condition;$/;"	m	class:Watcher	ac
 copies	worker.h	/^    int copies;$/;"	m	struct:flexdir_t	access:public
 copyError	worker.cpp	/^    bool copyError = false;$/;"	l
 daemon	makefile	/^daemon = flexdird$/;"	m
-dailyCheck	worker.h	/^    bool dailyCheck;$/;"	m	struct:settings_t	access:public
-dailyCheckTime	worker.h	/^    string dailyCheckTime;$/;"	m	struct:settings_t	access:public
+dailyRepair	worker.h	/^    bool dailyRepair;$/;"	m	struct:settings_t	access:public
+dailyRepairTime	worker.h	/^    string dailyRepairTime;$/;"	m	struct:settings_t	access:public
+dailySync	worker.h	/^    bool dailySync;$/;"	m	struct:settings_t	access:public
+dailySyncTime	worker.h	/^    string dailySyncTime;$/;"	m	struct:settings_t	access:public
+debug	checker.cpp	/^void Checker::debug()$/;"	f	class:Checker	signature:()
+debug	checker.h	/^        void debug(); \/\/TODO: remove this function$/;"	p	class:Checker	access:public	signature:()
+debug	flexdir.cpp	/^                ch.debug();$/;"	p	file:	signature:()
 delPath	worker.cpp	/^        string delPath = pd.path + "\/.deleted" + pf.x_path;$/;"	l
 deleteWaitFlag	worker.h	/^    bool deleteWaitFlag;$/;"	m	struct:settings_t	access:public
 dir	worker.cpp	/^                DIR* dir = opendir((char*)pad.c_str());$/;"	l
@@ -230,13 +241,16 @@ doTask	worker.h	/^        int doTask(task_t * task);$/;"	p	class:Worker	access:p
 endl	checker.cpp	/^                        cout << "\\nFile: " << path << " is not a symbolic link."<< endl;$/;"	l
 endl	checker.cpp	/^                        cout << "\\nFile: " << path << " link target does not exist."<< endl;$/;"	l
 endl	checker.cpp	/^                        cout << "\\nPoolfile: " << pfPath << " is not linked."<< endl;$/;"	l
+endl	checker.cpp	/^    cout << "job: " << job << endl;$/;"	l
+endl	checker.cpp	/^    cout << "time: " << t << endl;$/;"	l
 endl	flexdir.cpp	/^        cout << "OK" << endl;$/;"	l
 endl	flexdir.cpp	/^        cout << errors << " errors found, run flexdir -r to repair" << endl;$/;"	l
 endl	flexdir.cpp	/^    cout << "-f : print filesystem as xml" << endl;$/;"	l
 endl	flexdir.cpp	/^    cout << "-h : print this page" << endl;$/;"	l
 endl	flexdir.cpp	/^    cout << "-r : repair errors" << endl;$/;"	l
-endl	flexdir.cpp	/^    cout << "-s : print settings as xml" << endl;$/;"	l
-endl	flexdir.cpp	/^    cout << "-t : print status" << endl;$/;"	l
+endl	flexdir.cpp	/^    cout << "-s : print status" << endl;$/;"	l
+endl	flexdir.cpp	/^    cout << "-t : print settings as xml" << endl;$/;"	l
+endl	flexdir.cpp	/^    cout << "-y : resync extra copies" << endl;$/;"	l
 endl	flexdir.cpp	/^    cout << "Flexdir options:" << endl;$/;"	l
 endl	test/testWatcher.cpp	/^    cout << "create testfile" << endl;$/;"	l
 endl	test/testWatcher.cpp	/^    cout << "delete testfile" << endl;$/;"	l
@@ -346,6 +360,8 @@ getLoadAverage	worker.cpp	/^double Worker::getLoadAverage()$/;"	f	class:Worker	s
 getLoadAverage	worker.h	/^        double getLoadAverage();$/;"	p	class:Worker	access:public	signature:()
 getNdirs	worker.cpp	/^vector<pooldir_t> Worker::getNdirs(int n)$/;"	f	class:Worker	signature:(int n)
 getNdirs	worker.h	/^        vector<pooldir_t> getNdirs(int n);$/;"	p	class:Worker	access:public	signature:(int n)
+getNextJob	checker.cpp	/^void Checker::getNextJob(string * job, int * timeToNextJob)$/;"	f	class:Checker	signature:(string * job, int * timeToNextJob)
+getNextJob	checker.h	/^        void getNextJob(string * job, int * timeToNextJob);$/;"	p	class:Checker	access:private	signature:(string * job, int * timeToNextJob)
 getPathFromWatchDescriptor	watcher.cpp	/^string Watcher::getPathFromWatchDescriptor(int wd)$/;"	f	class:Watcher	signature:(int wd)
 getPathFromWatchDescriptor	watcher.h	/^        string getPathFromWatchDescriptor(int wd);$/;"	p	class:Watcher	access:private	signature:(int wd)
 getPoolFiles	worker.cpp	/^vector<poolfile_t> Worker::getPoolFiles(flexfile_t * flexfile)$/;"	f	class:Worker	signature:(flexfile_t * flexfile)
@@ -359,6 +375,9 @@ getSettings	worker.cpp	/^settings_t * Worker::getSettings()$/;"	f	class:Worker	s
 getSettings	worker.h	/^        settings_t * getSettings();$/;"	p	class:Worker	access:public	signature:()
 getTime	worker.cpp	/^string Worker::getTime(const char * format)$/;"	f	class:Worker	signature:(const char * format)
 getTime	worker.h	/^        string getTime(const char * format);$/;"	p	class:Worker	access:public	signature:(const char * format)
+h	checker.cpp	/^    string t, h, m;$/;"	l
+hsr	checker.cpp	/^        istringstream hsr(h);$/;"	p	file:	signature:(h)
+hss	checker.cpp	/^        istringstream hss(h);$/;"	p	file:	signature:(h)
 i	test/testWorker.cpp	/^            ss << j << i;$/;"	l
 i	watcher.cpp	/^    int length, i = 0, n = 0, fd;$/;"	l
 i	worker.cpp	/^    vector<pooldir_t>::iterator i;$/;"	l
@@ -372,7 +391,10 @@ iter	test/testWorker.cpp	/^    vector<pooldir_t>::iterator iter;$/;"	l
 iter	worker.cpp	/^    vector<pooldir_t>::iterator iter;$/;"	l
 ix	worker.cpp	/^    vector<flexdir_t>::iterator ix;$/;"	l
 ixf	worker.cpp	/^    vector<flexdir_t>::iterator ixf;$/;"	l
+job	checker.cpp	/^    string job = "no";$/;"	l
+job	checker.cpp	/^    string job = "resync";$/;"	l
 key	worker.cpp	/^            string key, value;$/;"	l
+l	worker.cpp	/^            string l = "WORKER: working, ";$/;"	l
 la	worker.cpp	/^                stringstream la, mla, mls;$/;"	l
 lavg	worker.cpp	/^                la << lavg;$/;"	l
 lavg	worker.cpp	/^            double lavg = getLoadAverage();$/;"	l
@@ -400,6 +422,7 @@ loadavg	worker.cpp	/^    la >> loadavg;$/;"	l
 log	worker.cpp	/^    fstream log;$/;"	l
 logEntry	worker.cpp	/^    string path, logEntry;$/;"	l
 logFile	worker.h	/^        string logFile;$/;"	m	class:Worker	access:private
+m	checker.cpp	/^    string t, h, m;$/;"	l
 main	flexdir.cpp	/^int main(int argc, char * argv[])$/;"	f	signature:(int argc, char * argv[])
 main	flexdird.cpp	/^int main()$/;"	f	signature:()
 main	test/testWatcher.cpp	/^int main()$/;"	f	signature:()
@@ -409,6 +432,8 @@ maxLoadSleep	worker.h	/^    int maxLoadSleep;$/;"	m	struct:settings_t	access:pub
 maxWorkerThreads	worker.h	/^    int maxWorkerThreads;$/;"	m	struct:settings_t	access:public
 mla	worker.cpp	/^                stringstream la, mla, mls;$/;"	l
 mls	worker.cpp	/^                stringstream la, mla, mls;$/;"	l
+msr	checker.cpp	/^        istringstream msr(m);$/;"	p	file:	signature:(m)
+mss	checker.cpp	/^        istringstream mss(m);$/;"	p	file:	signature:(m)
 mutex	checker.h	/^        pthread_mutex_t * mutex;$/;"	m	class:Checker	access:private
 mutex	flexdird.cpp	/^pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;$/;"	v
 mutex	test/testWatcher.cpp	/^pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;$/;"	v
@@ -420,8 +445,11 @@ name	worker.h	/^    string name;$/;"	m	struct:flexfile_t	access:public
 name	worker.h	/^    string name;$/;"	m	struct:poolfile_t	access:public
 ndirtest	test/testWorker.cpp	/^void ndirtest()$/;"	f	signature:()
 ndirtest	test/testWorker.cpp	/^void ndirtest();$/;"	p	file:	signature:()
+next	checker.cpp	/^    time_t next;$/;"	l
 next	watcher.cpp	/^            struct inotify_event * next = (struct inotify_event *) &buffer[n];$/;"	l
 nothing	test/testWorker.cpp	/^    string nothing= "\/home\/jos\/tmp\/doesntexist";$/;"	l
+now	checker.cpp	/^    time_t now;$/;"	l
+nowInfo	checker.cpp	/^    struct tm * nowInfo;$/;"	l
 open	worker.cpp	/^    file.open(SETTINGS);$/;"	p	file:	signature:(SETTINGS)
 open	worker.cpp	/^    log.open(DEF_LOGFILE, fstream::in | fstream::out | fstream::app);$/;"	p	file:	signature:(DEF_LOGFILE, fstream::in | fstream::out | fstream::app)
 p	checker.cpp	/^            string p = (*it).path + "\/" + (*fl).name;$/;"	l
@@ -469,7 +497,7 @@ poolfiles	checker.cpp	/^    vector<poolfile_t> poolfiles;$/;"	l
 poolfiles	worker.cpp	/^    vector<poolfile_t> poolfiles;$/;"	l
 pop	checker.cpp	/^            s->tasks.pop();$/;"	p	file:	signature:()
 pop	worker.cpp	/^            settings.tasks.pop();$/;"	p	file:	signature:()
-pp	checker.cpp	/^                   string pp = (*pfi).p_path + (*pfi).x_path + "\/" + (*pfi).name;$/;"	l
+pp	checker.cpp	/^                    string pp = (*pfi).p_path + (*pfi).x_path + "\/" + (*pfi).name;$/;"	l
 ppath	checker.cpp	/^            string ppath = "";$/;"	l
 ppath	worker.cpp	/^    string ppath;$/;"	l
 printFileStructure	flexdir.cpp	/^    w.printFileStructure();$/;"	p	file:	signature:()
@@ -495,6 +523,8 @@ push_back	worker.cpp	/^            files.push_back(pf);$/;"	p	file:	signature:(p
 rawtime	worker.cpp	/^    time_t rawtime;$/;"	l
 removeError	worker.cpp	/^                    bool removeError = false;$/;"	l
 renameError	worker.cpp	/^                    bool renameError = false;$/;"	l
+repJob	checker.cpp	/^        string repJob = "repair";$/;"	l
+repTime	checker.cpp	/^    int repTime;$/;"	l
 repair	checker.cpp	/^int Checker::repair(bool prompt)$/;"	f	class:Checker	signature:(bool prompt)
 repair	checker.h	/^        int repair(bool prompt);$/;"	p	class:Checker	access:public	signature:(bool prompt)
 repair	flexdir.cpp	/^void repair()$/;"	f	signature:()
@@ -504,6 +534,8 @@ repairCopies	checker.h	/^        void repairCopies(flexfile_t * ff, flexdir_t * 
 rest	worker.cpp	/^            string rest = path.substr(len);$/;"	l
 resync	checker.cpp	/^void Checker::resync()$/;"	f	class:Checker	signature:()
 resync	checker.h	/^        void resync();$/;"	p	class:Checker	access:public	signature:()
+resync	flexdir.cpp	/^    ch.resync();$/;"	p	file:	signature:()
+resync	flexdir.cpp	/^void resync()$/;"	f	signature:()
 resync	flexdir.cpp	/^void resync();$/;"	p	file:	signature:()
 ret	worker.cpp	/^    int ret = 0;$/;"	l
 ret	worker.cpp	/^    string ret(buffer);$/;"	p	file:	signature:(buffer)
@@ -532,13 +564,16 @@ sb	worker.cpp	/^    struct stat sb;$/;"	l
 sepPos	worker.cpp	/^            size_t sepPos = temp.find('=');$/;"	l
 setPoolfileRole	checker.cpp	/^int Checker::setPoolfileRole(poolfile_t poolfile, role_t role)$/;"	f	class:Checker	signature:(poolfile_t poolfile, role_t role)
 setPoolfileRole	checker.h	/^        int setPoolfileRole(poolfile_t poolfile, role_t role);$/;"	p	class:Checker	access:private	signature:(poolfile_t poolfile, role_t role)
+settings	checker.cpp	/^    settings_t * settings = worker->getSettings();$/;"	l
 settings	worker.h	/^        settings_t settings;$/;"	m	class:Worker	access:private
 settingsValidLine	worker.cpp	/^bool Worker::settingsValidLine(const string &line) const$/;"	f	class:Worker	signature:(const string &line) const
 settingsValidLine	worker.h	/^        bool settingsValidLine(const string &line) const;$/;"	p	class:Worker	access:private	signature:(const string &line) const
 settings_t	worker.h	/^struct settings_t $/;"	s
 settings_t::alarmThreshold	worker.h	/^    int alarmThreshold;$/;"	m	struct:settings_t	access:public
-settings_t::dailyCheck	worker.h	/^    bool dailyCheck;$/;"	m	struct:settings_t	access:public
-settings_t::dailyCheckTime	worker.h	/^    string dailyCheckTime;$/;"	m	struct:settings_t	access:public
+settings_t::dailyRepair	worker.h	/^    bool dailyRepair;$/;"	m	struct:settings_t	access:public
+settings_t::dailyRepairTime	worker.h	/^    string dailyRepairTime;$/;"	m	struct:settings_t	access:public
+settings_t::dailySync	worker.h	/^    bool dailySync;$/;"	m	struct:settings_t	access:public
+settings_t::dailySyncTime	worker.h	/^    string dailySyncTime;$/;"	m	struct:settings_t	access:public
 settings_t::deleteWaitFlag	worker.h	/^    bool deleteWaitFlag;$/;"	m	struct:settings_t	access:public
 settings_t::flexdirs	worker.h	/^    vector<flexdir_t> flexdirs;$/;"	m	struct:settings_t	access:public
 settings_t::maxLoadAverage	worker.h	/^    double maxLoadAverage;$/;"	m	struct:settings_t	access:public
@@ -574,7 +609,10 @@ str	worker.cpp	/^                istringstream str(value);$/;"	p	file:	signature
 str	worker.cpp	/^        stringstream str;$/;"	l
 symlinkTest	test/testWorker.cpp	/^void symlinkTest();$/;"	p	file:	signature:()
 symlinkTest	test/testWorker.cpp	/^void symlinkTest(){$/;"	f	signature:()
+t	checker.cpp	/^    int t = 0;$/;"	l
+t	checker.cpp	/^    string t, h, m;$/;"	l
 t	test/testWorker.cpp	/^    task_t t;$/;"	l
+tInfo	checker.cpp	/^    struct tm * tInfo;$/;"	l
 target	checker.cpp	/^                string target = w->getLinkTarget((char*)p.c_str());$/;"	l
 target	worker.cpp	/^                            string target = dirs.begin()->path + fd.path + "\/" +ff.name;$/;"	l
 task	checker.cpp	/^            task_t task = s->tasks.front();$/;"	l
@@ -597,6 +635,7 @@ testWatcher	test/testWatcher.cpp	/^void testWatcher()$/;"	f	signature:()
 testWatcher	test/testWatcher.cpp	/^void testWatcher();$/;"	p	file:	signature:()
 testlink	test/testWorker.cpp	/^    cout <<testlink << ": ";$/;"	l
 testlink	test/testWorker.cpp	/^    string testlink = "\/home\/jos\/tmp\/testlink";$/;"	l
+timeToNextJob	checker.cpp	/^    int timeToNextJob = 5;$/;"	l
 timeinfo	worker.cpp	/^    struct tm * timeinfo;$/;"	l
 to	worker.cpp	/^                        string to = toPath + "\/" + ff.name;$/;"	l
 to	worker.h	/^    string to;$/;"	m	struct:task_t	access:public
@@ -630,7 +669,6 @@ watcherThread	flexdird.cpp	/^void * watcherThread(void * id)$/;"	f	signature:(vo
 watcherThread	flexdird.cpp	/^void * watcherThread(void * id);$/;"	p	file:	signature:(void * id)
 watcherThread	test/testWatcher.cpp	/^void * watcherThread(void * id)$/;"	f	signature:(void * id)
 watcherThread	test/testWatcher.cpp	/^void * watcherThread(void * id);$/;"	p	file:	signature:(void * id)
-wo	flexdir.cpp	/^    Worker wo = w; \/\/TODO: remove this line$/;"	l
 wo	test/testWorker.cpp	/^    Worker wo = w;$/;"	l
 worker	checker.h	/^        Worker * worker;$/;"	m	class:Checker	access:private
 worker	watcher.h	/^        Worker * worker;$/;"	m	class:Watcher	access:private

@@ -62,8 +62,10 @@ struct settings_t
     int maxLoadSleep;
     bool verbose;
     bool deleteWaitFlag;
-    bool dailyCheck;
-    string dailyCheckTime;
+    bool dailySync;
+    string dailySyncTime;
+    bool dailyRepair;
+    string dailyRepairTime;
     int alarmThreshold;
 };
 
