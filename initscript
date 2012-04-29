@@ -3,7 +3,7 @@
 . /etc/rc.conf
 . /etc/rc.d/functions
 
-name=flexdir
+name=flexdird
 #. /etc/conf.d/crond
 args=
 PID=$(get_pid $name)

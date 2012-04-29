@@ -4,22 +4,30 @@
 #include <fstream>//filestream
 #include <sstream>//stringstream
 #include <time.h>//getTime
-#include <vector> //list folders
+#include <vector> //list dirs
 #include <queue>//task queue
 #include <sys/stat.h>//for file-exist
 #include <sys/statvfs.h>//for disk sizes
 #include <dirent.h>//for reading filenames
 #include <cstdlib> //system calls
+#include <unistd.h> //sleep function
 #include <string.h> //strcpy
 #include <algorithm> //sort vectors
 #include <pthread.h> //posix threads
 
-#define SETTINGS "/home/jos/Git/flexdir/flexdir.conf"
-#define DEF_LOGFILE "/home/jos/Git/flexdir/flexdir.log"
+#define SETTINGS "/etc/flexdir.conf"
+#define DEF_LOGFILE "/var/log/flexdir.log"
 #define MAX_LOAD_AVG 1
 #define MAX_LOAD_SLEEP 5
 #define MAX_WORKER_THREADS 5
+#define DAILY_SYNC false
+#define DAILY_SYNC_TIME "0:00"
+#define DAILY_REPAIR false
+#define DAILY_REPAIR_TIME "0:00"
+#define ALARM_THRESHOLD 100
 #define VERBOSE true
+#define USER_NAME "root"
+#define USER_GROUP "root"
 
 using namespace std;
 
@@ -38,12 +46,10 @@ Worker::Worker()
     {
         working=false;
     }
-    writeLog("Worker constructor");
 }
 
 Worker::~Worker()
 {
-    writeLog("Worker deconstructor");
 }
 
 void Worker::loadSettings()
@@ -53,6 +59,14 @@ void Worker::loadSettings()
     settings.maxLoadSleep = MAX_LOAD_SLEEP;
     settings.maxWorkerThreads = MAX_WORKER_THREADS;
     settings.verbose = VERBOSE;
+    settings.deleteWaitFlag = false;
+    settings.dailySync = DAILY_SYNC; 
+    settings.dailySyncTime = DAILY_SYNC_TIME; 
+    settings.dailyRepair = DAILY_REPAIR;
+    settings.dailyRepairTime = DAILY_REPAIR_TIME;
+    settings.alarmThreshold = ALARM_THRESHOLD;
+    settings.userName = USER_NAME;
+    settings.userGroup = USER_GROUP;
     //load settings file
     ifstream file;
     file.open(SETTINGS);
@@ -115,9 +129,57 @@ void Worker::loadSettings()
                     writeLog("ERROR: settings: could not read maxWorkerThreads, set default");
                 }
             }
-            else if(key == "xFolder")
+            else if(key == "dailySync")
             {
-                xfolder_t f;
+                if (value == "true")
+                {
+                    settings.dailySync = true;
+                }
+                else
+                {
+                    settings.dailySync = false;
+                }
+            }
+            else if(key == "dailySyncTime")
+            {
+                settings.dailySyncTime = value;
+            }
+            else if (key == "dailyRepair")
+            {
+                if (value == "true")
+                {
+                    settings.dailyRepair = true;
+                }
+                else
+                {
+                    settings.dailyRepair = false;
+                }
+            }
+            else if (key == "dailyRepairTime")
+            {
+                settings.dailyRepairTime = value;
+            }
+            else if(key == "alarmThreshold")
+            {
+                istringstream str(value);
+                if (!(str >> settings.alarmThreshold))
+                {
+                    settings.alarmThreshold = ALARM_THRESHOLD;
+                    writeLog("ERROR: settings: could not read alarmThreshold, set default");
+                }
+
+            }
+            else if (key == "userName")
+            {
+                settings.userName = value;
+            }
+            else if (key == "userGroup")
+            {
+                settings.userGroup = value;
+            }
+            else if (key == "flexdir")
+            {
+                flexdir_t f;
                 f.path = value.substr(0, value.find_last_of(' '));
                 if (getFileExists((char *) f.path.c_str()))
                 {
@@ -125,30 +187,30 @@ void Worker::loadSettings()
                     if (!(str >> f.copies))
                     {
                         f.copies=1;
-                        writeLog("ERROR: settings: could not read xfolder copies, set 1");
+                        writeLog("ERROR: settings: could not read flexdir copies, set 1");
                     }
                     f.watchdescriptor = -1;
-                    settings.xFolders.push_back(f);
+                    settings.flexdirs.push_back(f);
                 }
                 else
                 {
-                    writeLog("ERROR: settings: xfolder " + (string)f.path + " doesn't exist");
+                    writeLog("ERROR: settings: flexdir " + (string)f.path + " doesn't exist");
                 }
             }
-            else if(key == "poolFolder")
+            else if (key == "pooldir")
             {
-                poolfolder_t f;
+                pooldir_t f;
                 if (getFileExists((char*) value.c_str()))
                 {
                     f.path = value;
                     f.sizeMB = -1;
                     f.freeMB = -1;
                     f.usedPerc = -1;
-                    settings.poolFolders.push_back(f);
+                    settings.pooldirs.push_back(f);
                 }
                 else
                 {
-                    writeLog("ERROR: settings: poolfolder " + (string)value + " doesn't exist");
+                    writeLog("ERROR: settings: pooldir " + (string)value + " doesn't exist");
                 }
             }
         }
@@ -197,37 +259,43 @@ void Worker::printSettings()
     cout << "<settings>" << endl;
     cout << "  <maxLoadAverage>" << settings.maxLoadAverage << "</maxLoadAverage>" << endl;
     cout << "  <maxLoadSleep>" << settings.maxLoadSleep << "</maxLoadSleep>" << endl;
-    cout << "  <maxWorkerThreads>" << settings.maxWorkerThreads 
-        << "</maxWorkerThreads>" << endl;
-    vector<xfolder_t>::iterator ixf;
-    cout << "  <xfolders>" << endl;
-    for(ixf = settings.xFolders.begin(); ixf != settings.xFolders.end(); ixf++)
+    cout << "  <maxWorkerThreads>" << settings.maxWorkerThreads << "</maxWorkerThreads>" << endl;
+    cout << "  <dailySync>" << settings.dailySync << "</dailySync>" << endl;
+    cout << "  <dailySyncTime>" << settings.dailySyncTime << "</dailyCheckTime>" << endl;
+    cout << "  <dailyRepair>" << settings.dailyRepair << "</dailyRepair>" << endl;
+    cout << "  <dailyRepairTime>" << settings.dailyRepairTime << "</dailyRepairTime>" << endl;
+    cout << "  <alarmThreshold>" << settings.alarmThreshold << "</alarmThreshold>" << endl;
+    cout << "  <userName>" << settings.userName << "</userName>" << endl;
+    cout << "  <userGroup>" << settings.userGroup << "</userGroup>" << endl;
+    vector<flexdir_t>::iterator ixf;
+    cout << "  <flexdirs>" << endl;
+    for(ixf = settings.flexdirs.begin(); ixf != settings.flexdirs.end(); ixf++)
     {
-        cout << "    <xfolder>\n";
+        cout << "    <flexdir>\n";
         cout << "      <path>" <<  ixf->path << "</path>\n";
         cout << "      <copies>" << ixf->copies << "</copies>\n"; 
         cout << "      <watchdescriptor>" << ixf->watchdescriptor << "</watchdescriptor>\n";
-        cout << "    </xfolder>" << endl;
+        cout << "    </flexdir>" << endl;
     }
-    cout << "  </xfolders>\n  <poolfolders>" << endl;
-    vector<poolfolder_t>::iterator ipf;
-    for(ipf = settings.poolFolders.begin(); ipf != settings.poolFolders.end(); ipf++)
+    cout << "  </flexdirs>\n  <pooldirs>" << endl;
+    vector<pooldir_t>::iterator ipf;
+    for(ipf = settings.pooldirs.begin(); ipf != settings.pooldirs.end(); ipf++)
     {
-        cout << "    <poolfolder>\n";
+        cout << "    <pooldir>\n";
         cout << "      <path>" << ipf->path << "</path>\n";
         cout << "      <sizeMB>" << ipf->sizeMB << "</sizeMB>\n";
         cout << "      <freeMB>" << ipf->freeMB << "</freeMB>\n";
         cout << "      <usedPerc>" << ipf->usedPerc << "</usedPerc>\n";
-        cout << "    </poolfolder>" << endl;
+        cout << "    </pooldir>" << endl;
     }
-    cout << "  </poolfolders>\n</settings>" << endl;
+    cout << "  </pooldirs>\n</settings>" << endl;
 }
 
 void Worker::getPoolSizes()
 {
     struct statvfs buffer;
-    vector<poolfolder_t>::iterator iter;
-    for(iter = settings.poolFolders.begin(); iter != settings.poolFolders.end(); iter++)
+    vector<pooldir_t>::iterator iter;
+    for(iter = settings.pooldirs.begin(); iter != settings.pooldirs.end(); iter++)
     {
         if (!statvfs((char*)iter->path.c_str(), &buffer))
         {
@@ -249,9 +317,24 @@ void Worker::getPoolSizes()
 
 void Worker::loadFileStructure()
 {
-    vector<poolfolder_t>::iterator ip;
-    vector<xfolder_t>::iterator ix;
-    for(ix = settings.xFolders.begin(); ix != settings.xFolders.end(); ix++)
+    vector<flexdir_t>::iterator fit;
+    vector<pooldir_t>::iterator pit;
+    for (fit = settings.flexdirs.begin(); fit != settings.flexdirs.end(); fit++)
+    {
+        (*fit).files.clear();
+    }
+    for (pit = settings.pooldirs.begin(); pit != settings.pooldirs.end(); pit++)
+    {
+        (*pit).files.clear();
+    }
+    loadFlexFiles();
+    loadPoolFiles();
+}
+
+void Worker::loadFlexFiles()
+{
+    vector<flexdir_t>::iterator ix;
+    for(ix = settings.flexdirs.begin(); ix != settings.flexdirs.end(); ix++)
     {
         DIR* dir = opendir((char*)ix->path.c_str());
         if (dir)
@@ -261,25 +344,31 @@ void Worker::loadFileStructure()
             {
                 if ((string)entry->d_name != "." && (string)entry->d_name != "..")
                 {
-                    xfile_t f;
+                    flexfile_t f;
                     f.name = entry->d_name;
                     f.x_path = ix->path;
                     f.role = NONE;
-                    f.copies = 0;
+                    f.actualCopies = 0;
                     ix->files.push_back(f);
                 }
             }
         }
         else
         {
-            writeLog("ERROR: loadFileStructure: could not open xfile: "+ (string)ix->path);
+            writeLog("ERROR: loadFileStructure: could not open flexdir: "+ (string)ix->path);
         }
     }
-    for(ip = settings.poolFolders.begin(); ip != settings.poolFolders.end(); ip++)
+}
+
+void Worker::loadPoolFiles()
+{
+    vector<flexdir_t>::iterator ix;
+    vector<pooldir_t>::iterator ip;
+    for(ip = settings.pooldirs.begin(); ip != settings.pooldirs.end(); ip++)
     {
-        for(ix = settings.xFolders.begin(); ix != settings.xFolders.end(); ix++)
+        for(ix = settings.flexdirs.begin(); ix != settings.flexdirs.end(); ix++)
         {
-            string pad = ip->path + "/" + ix->path;
+            string pad = ip->path + ix->path;
             if (getFileExists((char*)pad.c_str()))
             {
                 DIR* dir = opendir((char*)pad.c_str());
@@ -301,7 +390,7 @@ void Worker::loadFileStructure()
                 }
                 else
                 {
-                    writeLog("ERROR: loadFileStructure: could not open poolfile: "+ (string)ix->path);
+                    writeLog("ERROR: loadFileStructure: could not open poolfile: "+ pad);
                 }
             }
         }
@@ -310,35 +399,34 @@ void Worker::loadFileStructure()
 
 void Worker::printFileStructure()
 {
-    loadFileStructure();
     cout << "<fileStructure>" << endl;
-    vector<xfolder_t>::iterator ixf;
-    vector<xfile_t>::iterator xf;
-    cout << "  <xfolders>" << endl;
-    for(ixf = settings.xFolders.begin(); ixf != settings.xFolders.end(); ixf++)
+    vector<flexdir_t>::iterator ixf;
+    vector<flexfile_t>::iterator xf;
+    cout << "  <flexdirs>" << endl;
+    for(ixf = settings.flexdirs.begin(); ixf != settings.flexdirs.end(); ixf++)
     {
-        cout << "    <xfolder>\n";
+        cout << "    <flexdir>\n";
         cout << "      <path>" <<  ixf->path << "</path>\n";
         cout << "      <copies>" << ixf->copies << "</copies>\n"; 
         cout << "      <watchdescriptor>" << ixf->watchdescriptor << "</watchdescriptor>\n";
         cout << "      <files>" << endl;
         for(xf = ixf->files.begin(); xf != ixf->files.end(); xf++)
         {
-            cout << "        <xfile>" << endl;
+            cout << "        <flexfile>" << endl;
             cout << "          <name>" << xf->name << "</name>\n";
             cout << "          <x_path>" << xf->x_path << "</x_path>\n";
-            cout << "          <role>" << xf->role << "</role>\n";
-            cout << "        </xfile>" << endl;
+            cout << "          <role>" << role2string(xf->role) << "</role>\n";
+            cout << "        </flexfile>" << endl;
         }
         cout << "      </files>" << endl;
-        cout << "    </xfolder>" << endl;
+        cout << "    </flexdir>" << endl;
     }
-    cout << "  </xfolders>\n  <poolfolders>" << endl;
-    vector<poolfolder_t>::iterator ipf;
+    cout << "  </flexdirs>\n  <pooldirs>" << endl;
+    vector<pooldir_t>::iterator ipf;
     vector<poolfile_t>::iterator pf;
-    for(ipf = settings.poolFolders.begin(); ipf != settings.poolFolders.end(); ipf++)
+    for(ipf = settings.pooldirs.begin(); ipf != settings.pooldirs.end(); ipf++)
     {
-        cout << "    <poolfolder>\n";
+        cout << "    <pooldir>\n";
         cout << "      <path>" << ipf->path << "</path>\n";
         cout << "      <sizeMB>" << ipf->sizeMB << "</sizeMB>\n";
         cout << "      <freeMB>" << ipf->freeMB << "</freeMB>\n";
@@ -350,13 +438,44 @@ void Worker::printFileStructure()
             cout << "          <name>" << pf->name << "</name>\n";
             cout << "          <p_path>" << pf->p_path << "</p_path>\n";
             cout << "          <x_path>" << pf->x_path << "</x_path>\n";
-            cout << "          <role>" << pf->role << "</role>\n";
+            cout << "          <role>" << role2string(pf->role) << "</role>\n";
             cout << "        </poolfile>" << endl;
         }
         cout << "      </files>" << endl;
-        cout << "    </poolfolder>" << endl;
+        cout << "    </pooldir>" << endl;
     }
-    cout << "  </poolfolders>\n</fileStructure>" << endl;
+    cout << "  </pooldirs>\n</fileStructure>" << endl;
+}
+
+string Worker::role2string(role_t role)
+{
+    switch(role)
+    {
+        case NONE:
+            return "NONE";
+            break;
+        case FLEXFILE:
+            return "FLEXFILE";
+            break;
+        case NEW:
+            return "NEW";
+            break;
+        case PRIMARY:
+            return "PRIMARY";
+            break;
+        case SECONDARY:
+            return "SECONDARY";
+            break;
+        case ORPHAN:
+            return "ORPHAN";
+            break;
+        case COPIES:
+            return "COPIES";
+            break;
+        default:
+            return "UNKNOWN";
+            break;
+    }
 }
 
 void Worker::writeLog(string txt)
@@ -393,19 +512,19 @@ double Worker::getLoadAverage()
     return loadavg;
 }
 
-bool poolfolderSort(poolfolder_t d1, poolfolder_t d2)
+bool pooldirSort(pooldir_t d1, pooldir_t d2)
 {
     return d1.usedPerc < d2.usedPerc;
 }
 
-vector<poolfolder_t> Worker::getNfolders(int n)
+vector<pooldir_t> Worker::getNdirs(int n)
 {
-    vector<poolfolder_t> ret;
+    vector<pooldir_t> ret;
     int teller = 0;
-    vector<poolfolder_t>::iterator i;
+    vector<pooldir_t>::iterator i;
     getPoolSizes();
-    sort(settings.poolFolders.begin(), settings.poolFolders.end(), poolfolderSort);
-    for(i=settings.poolFolders.begin(); i != settings.poolFolders.end(); i++)
+    sort(settings.pooldirs.begin(), settings.pooldirs.end(), pooldirSort);
+    for(i=settings.pooldirs.begin(); i != settings.pooldirs.end(); i++)
     {
         ret.push_back(*i);
         teller++;
@@ -415,6 +534,27 @@ vector<poolfolder_t> Worker::getNfolders(int n)
         }
     }
     return ret;
+}
+
+vector<poolfile_t> Worker::getPoolFiles(flexfile_t * flexfile)
+{
+    vector<poolfile_t> files;
+    vector<pooldir_t>::iterator pit;
+    string ppath;
+    for(pit = settings.pooldirs.begin(); pit != settings.pooldirs.end(); pit++)
+    {
+        ppath = pit->path + flexfile->x_path + "/" + flexfile->name;
+        if (getFileExists((char*)ppath.c_str()) == true)
+        {
+            poolfile_t pf;
+            pf.name = flexfile->name;
+            pf.p_path = pit->path;
+            pf.x_path = flexfile->x_path;
+            pf.role = NONE;
+            files.push_back(pf);
+        }
+    }
+    return files;
 }
 
 bool Worker::getFileExists(const char * path)
@@ -445,49 +585,70 @@ bool Worker::getIsLink(char * path)
     else { 
         writeLog("FAILED: getIsLink > lstat(" + (string)path+ ")");
         return false;
-    } 
+    }
 }
 
 string Worker::getLinkTarget(char * path)
 {
     char buf[512];
-    if (readlink(path, buf, sizeof(buf)) < 0)
+    int len = readlink(path, buf, sizeof(buf));
+    if (len < 0)
     {
         writeLog("No link target found");
         buf[0] = '\0';
+    }
+    else 
+    {
+        buf[len] = '\0';
     }
     return (string)buf;
 }
 
 int Worker::actionMoveFile(char * from, char * to)
 {    
-    return rename(from, to);
+    actionDeleteFile(to);
+    string tmpTo = (string) to;
+    string tmpFrom = (string) from;
+    //tmpTo = tmpTo.substr(0, tmpTo.find_last_of("/"));
+    string com = "mv \"" + (string)from + "\" \"" + tmpTo + "\"";
+    return system((char*) com.c_str());
 }
 
 int Worker::actionDeleteFile(char * path)
 {
-    return remove(path);
+    string com = "rm -r \"" + (string)path + "\"";
+    return system((char*)com.c_str());
 }
 
 int Worker::actionCopyFile(char * from, char * to)//TODO: use rsync
 {
-    string com = "cp -ruf " + (string)from + " " + (string)to; 
+    string com = "cp -ruf \"" + (string)from + "\" \"" + (string)to + "\""; 
     //TODO: find alternative for system call
     return system((char *) com.c_str());
 }
 
 int Worker::actionSyncFile(char * from, char * to)
 {
-    string com = "rsync --recursive --perms --delete --update \"" + (string)from + "\" \"" + (string)to +"\"";
+    string tmpTo = (string) to;
+    tmpTo = tmpTo.substr(0, tmpTo.find_last_of("/"));
+    string com = "rsync --recursive --owner --group --perms --delete --update \"" + (string)from + "\" \"" + tmpTo +"\"";
     //TODO: find alternative for system call
     return system((char *) com.c_str());
 }
 
 int Worker::actionCreateLink(char * target, char * linkname)
 {
-    string com = "cp -rsf " + (string)target + " " + (string)linkname;
+    int ret = 0;
+    string com = "ln -s \"" + (string)target + "\" \"" + (string)linkname + "\"";
     //TODO: find alternative for system call
-    return system((char *) com.c_str()); 
+    ret = system((char *) com.c_str()); 
+    com = "chown -R " + settings.userName + ":" + settings.userGroup + " \"" + (string)linkname + "\"";
+    cout << com <<  endl; //TODO: remove this line
+    if (ret == 0)
+    {
+        ret = system((char*)com.c_str());
+    }
+    return ret;
 }
 
 int Worker::actionChangeLink(char * link, char * newTarget)
@@ -502,23 +663,68 @@ int Worker::actionChangeLink(char * link, char * newTarget)
     return ret;
 }
 
-int Worker::actionCreateFolder(char * path)
+int Worker::actionCreatedir(char * path)
 {
-    string cmd = "mkdir -p " + (string)path;
+    string cmd = "mkdir -p \"" +  (string)path + "\"";
     //TODO: find alternative for system call (mkdir not recursive)
     return system((char*)cmd.c_str());
 }
 
+int Worker::actionRemovePoolFile(char * path)
+{
+    pooldir_t pd;
+    poolfile_t pf;
+    //get pooldir/file structures from path <from>
+    if(getPoolStructFromPath(&pd, &pf, path) == 0)
+    {
+        //check for .deleted dir, create if needed
+        bool pathError = false;
+        string delPath = pd.path + "/.deleted" + pf.x_path;
+        if (getFileExists((char*)delPath.c_str()) == false)
+        {
+            if(actionCreatedir((char*)delPath.c_str()) != 0)
+            {
+                pathError = true;
+            }
+        }
+        if (pathError == false)
+        {
+            //move file to .deleted dir in pooldir root
+            if (actionMoveFile(path, (char*)delPath.c_str()) == 0)
+            {
+                return 0;
+            }
+            else
+            {
+                return -1;
+            }
+        }
+        else
+        {
+            return -1;
+        }
+    }
+    else
+    {
+        return -1;
+    }
+}
+
 void Worker::startWorker(pthread_mutex_t * mutex, pthread_cond_t * condition)
 {
-    bool stop = false;
-    while(stop == false)
+    bool stopThread = false;
+    while(stopThread == false)
     {
         pthread_mutex_lock(mutex);
         if (settings.tasks.size() == 0)
         {
             writeLog("WORKER: waiting...");
             pthread_cond_wait(condition, mutex);
+            string l = "WORKER: working, ";
+            stringstream ss;
+            ss <<  settings.tasks.size();
+            l += ss.str() + " tasks...";
+            writeLog(l);
         }
         pthread_mutex_unlock(mutex);
         while(settings.tasks.size() > 0)
@@ -533,81 +739,285 @@ void Worker::startWorker(pthread_mutex_t * mutex, pthread_cond_t * condition)
                 stringstream la, mla, mls;
                 la << lavg;
                 mla << settings.maxLoadAverage;
-                    mls << settings.maxLoadSleep;
-                    writeLog("WORKER: load "+la.str()+" > "+mla.str()+", sleeping "+mls.str()+" seconds");
-                    sleep(settings.maxLoadSleep);
-                    lavg=getLoadAverage();
-                }
-                doTask(&task);
+                mls << settings.maxLoadSleep;
+                writeLog("WORKER: load "+la.str()+" > "+mla.str()+", sleeping "+mls.str()+" seconds");
+                sleep(settings.maxLoadSleep);
+                lavg=getLoadAverage();
             }
-       }
-    }
-
-    int Worker::addTask(taskID_t ID, string from, string to)
-    {
-        task_t task;
-        task.ID=ID;
-        task.from = from;
-        task.to = to;
-        settings.tasks.push(task);
-        return 0;
-    }
-
-    int Worker::doTask(task_t * task)
-    {
-        string logEntry;
-        stringstream ss, sn;
-        sn << (settings.tasks.size() + 1);
-        ss << task->ID;
-        logEntry = "WORKER: " + sn.str() + " tasks, ";
-        switch (task->ID)
-        {
-            case ADD:
-                logEntry += "ADD task: ";
-                break;
-            case SYNC:
-                logEntry += "SYNC task: ";
-                if (actionSyncFile((char*)task->from.c_str(), (char*)task->to.c_str()) != 0)
-                {
-                    logEntry += "FAILED ";
-                }
-                else
-                {
-                    logEntry += "OK ";
-                }
-                break;
-            case DELETE:
-                logEntry += "DELETE task: ";
-                if (actionDeleteFile((char*)task->from.c_str()) != 0)
-                {
-                    logEntry += "FAILED ";
-                }
-                else
-                {
-                    logEntry += "OK ";
-                }
-                break;
-            case REMOVE:
-                logEntry += "REMOVE task: ";
-                break;
-            case RENAME:
-                logEntry += "RENAME task: ";
-                break;
-            default:
-                logEntry += "ERROR: unknown task-id: ";
-                break;
+            doTask(&task);
         }
-        logEntry +=  ", from: " + task->from + ", to:" + task->to;
+    }
+}
+
+int Worker::addTask(taskID_t ID, string from, string to)
+{
+    task_t task;
+    task.ID=ID;
+    task.from = from;
+    task.to = to;
+    settings.tasks.push(task);
+    return 0;
+}
+
+int Worker::doTask(task_t * task)
+{
+    flexdir_t fd;
+    flexfile_t ff;
+    vector<pooldir_t>::iterator pit;
+    vector<pooldir_t> dirs; 
+    vector<poolfile_t> poolfiles;
+    vector<poolfile_t>::iterator pfit;
+    string path, logEntry;
+    bool copyError = false;
+    stringstream ss, sn;
+    sn << (settings.tasks.size() + 1);
+    ss << task->ID;
+    logEntry = "WORKER: " + sn.str() + " tasks, ";
+    switch (task->ID)
+    {
+        case ADD:
+            logEntry += "ADD task: ";
+            //get flexdir/file structures from path <from>
+            if (getFlexStructFromPath(&fd, &ff, task->from) == 0)
+            {
+                //get n poolfolders
+                dirs = getNdirs(fd.copies);
+                if (dirs.size() > 0)
+                {
+                    //create destination dirs and rsync file to folders
+                    for (pit = dirs.begin(); pit != dirs.end(); pit++)
+                    {
+                        string toPath = pit->path + fd.path;
+                        string to = toPath + "/" + ff.name;
+                        if ( actionCreatedir((char*)toPath.c_str()) == 0)
+                        {
+                            if ( actionSyncFile((char*)task->from.c_str(), (char*)to.c_str()) != 0)
+                            {
+                                copyError = true;
+                            }
+                        }
+                        else
+                        {
+                            copyError = true;
+                        }
+                    }
+                    if (copyError == false)
+                    {
+                        //remove file / create link
+                        settings.deleteWaitFlag = true; //set flag, prevents trigger delete task by watcher
+                        if (actionDeleteFile((char*)task->from.c_str()) == 0)
+                        {
+                            string target = dirs.begin()->path + fd.path + "/" +ff.name;
+                            if (actionCreateLink((char*)target.c_str(), (char*)task->from.c_str()) == 0)
+                            {
+                                logEntry += "OK ";
+                            }
+                            else 
+                            {
+                                logEntry += "FAILED could not create symlink ";
+                            }
+                        }
+                        settings.deleteWaitFlag = false;
+                    }
+                    else
+                    {
+                        logEntry += "FAILED error copying file(s) to poolfolder(s) ";
+                    }
+                }
+                else
+                {
+                    logEntry += "FAILED could not get N poolfolders ";
+                }
+            }
+            else
+            {
+                logEntry += "FAILED could not get flexfile structure ";
+            }
+            break;
+        case SYNC:
+            //sync <from> -> <to>
+            logEntry += "SYNC task: ";
+            if (actionSyncFile((char*)task->from.c_str(), (char*)task->to.c_str()) != 0)
+            {
+                logEntry += "FAILED could not sync file ";
+            }
+            else
+            {
+                logEntry += "OK ";
+            }
+            break;
+        case DELETE:
+            logEntry += "DELETE task: ";
+            //delete file <from>
+            if (actionDeleteFile((char*)task->from.c_str()) != 0)
+            {
+                logEntry += "FAILED could not delete file ";
+            }
+            else
+            {
+                logEntry += "OK ";
+            }
+            break;
+        case REMOVE: //remove all poolfiles for given flexfile <from>
+            logEntry += "REMOVE task: ";
+            //find all files in pool
+            if (getFlexStructFromPath(&fd, &ff, task->from) == 0)
+            {
+                poolfiles = getPoolFiles(&ff);
+                if (poolfiles.size() > 0)
+                {
+                    //remove files in pool to .deleted 
+                    bool removeError = false;
+                    string path;
+                    for (pfit = poolfiles.begin(); pfit != poolfiles.end(); pfit++)
+                    {
+                        path = pfit->p_path + task->from;
+                        if (actionRemovePoolFile((char*)path.c_str()) != 0)
+                        {
+                            removeError = true;
+                        }
+                    }
+                    if (removeError == false)
+                    {
+                        logEntry += "OK ";
+                    }
+                    else
+                    {
+                        logEntry += "FAILED error removing poolfiles ";
+                    }
+                }
+                else
+                {
+                    logEntry += "FAILED no poolfiles found ";
+                }
+            }
+            else
+            {
+                logEntry += "FAILED could not get flexdir structure ";
+            }
+            break;
+        case RENAME: //rename all poolfiles for given flexfile and update link target
+            logEntry += "RENAME task: ";
+            //find all files in pool
+            if (getFlexStructFromPath(&fd, &ff, task->from) == 0)
+            {
+                poolfiles = getPoolFiles(&ff);
+                if (poolfiles.size() > 0)
+                {
+                    //rename files in pool to <to>
+                    bool renameError = false;
+                    string fromPath, toPath;
+                    for (pfit = poolfiles.begin(); pfit != poolfiles.end(); pfit++)
+                    {
+                        fromPath = pfit->p_path + task->from;
+                        toPath = pfit->p_path + task->to;
+                        if (actionMoveFile((char*)fromPath.c_str(), (char*)toPath.c_str()) != 0)
+                        {
+                            renameError = true;
+                        }
+                    }
+                    //change link target 
+                    if (renameError == false)
+                    {
+                        settings.deleteWaitFlag = true;
+                        if (actionChangeLink((char*)task->to.c_str(), (char*)toPath.c_str()) == 0)
+                        {
+                            logEntry += "OK ";
+                        }
+                        else
+                        {
+                            logEntry += "FAILED could not change link target ";
+                        }
+                        settings.deleteWaitFlag = false;
+                    }
+                    else
+                    {
+                        logEntry += "FAILED error renaming poolfiles ";
+                    }
+                }
+                else
+                {
+                    logEntry += "FAILED no poolfiles found ";
+                }
+            }
+            else
+            {
+                logEntry += "FAILED could not get flexdir structure ";
+            }
+            break;
+        case LINK:
+            logEntry += "LINK task: ";
+            if (actionCreateLink((char *)task->to.c_str(), (char *)task->from.c_str()) == 0)
+            {
+                logEntry += "OK ";
+            }
+            else
+            {
+                logEntry += "FAILED: could not create symbolic link ";
+            }
+            break;
+        default:
+            logEntry += "ERROR: unknown task-id: ";
+            break;
+    }
+    logEntry +=  ", from: " + task->from;
+    if ((task->to != " ") && (task->to != ""))
+    {
+        logEntry += ", to:" + task->to;
+    }
     writeLog(logEntry);
     return 0;
 }
 
-void Worker::getStructFromPath(xfolder_t * xfolder, xfile_t * xfile, string path)
+int Worker::getFlexStructFromPath(flexdir_t * flexdir, flexfile_t * flexfile, string path)
 {
-    xfolder = 0;
-    xfile = 0;
+    vector<flexdir_t>::iterator it;
+    for(it = settings.flexdirs.begin(); it != settings.flexdirs.end(); it++)
+    {
+        string fpath = (*it).path;
+        int len = fpath.length();
+        if (path.substr(0, len) == fpath)
+        {
+            *flexdir = *it;
+            (*flexfile).name = path.substr(len + 1);
+            (*flexfile).x_path = fpath;
+            (*flexfile).role=NONE;
+            vector<poolfile_t> pf = getPoolFiles(flexfile);
+            (*flexfile).actualCopies = (int)pf.size();
+            return 0;
+        }
 
+    }
+    return 1;
 }
 
+int Worker::getPoolStructFromPath(pooldir_t * pooldir, poolfile_t * poolfile, string path)
+{
+    vector<flexdir_t>::iterator fit;
+    vector<pooldir_t>::iterator pit;
+    for(pit = settings.pooldirs.begin(); pit != settings.pooldirs.end(); pit++)
+    {
+        string fpath = (*pit).path;
+        int len = fpath.length();
+        if (path.substr(0, len) == fpath)
+        {
+            *pooldir = *pit;
+            (*poolfile).p_path = fpath;
+            string rest = path.substr(len);
+            for(fit = settings.flexdirs.begin(); fit != settings.flexdirs.end(); fit++)
+            {
+                fpath = (*fit).path;
 
-
+                len = fpath.length();
+                if (rest.substr(0, len) == fpath)
+                {
+                    (*poolfile).name = rest.substr(len + 1);
+                    (*poolfile).x_path = fpath;
+                    (*poolfile).role=NONE;
+                    return 0;
+                }
+            }
+        }
+    }
+    return 1;
+}

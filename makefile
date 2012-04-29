@@ -1,15 +1,20 @@
 naam = flexdir
-main = testWorker
+daemon = flexdird
+cli = flexdir
+dirInstall = /usr/local/bin
+dirConfig = /etc
+dirInit = /etc/rc.d
+dirLog = /var/log
 
-flexdir: $(main).o worker.o watcher.o checker.o
-	g++ $(main).o worker.o watcher.o checker.o -lpthread -o $(naam)
+main : $(daemon).o $(cli).o worker.o watcher.o checker.o
+	g++ $(daemon).o worker.o watcher.o checker.o -lpthread -o $(daemon); g++ $(cli).o worker.o checker.o -lpthread -o $(cli)
 
-testWorker.o: testWorker.cpp
-	g++ -c testWorker.cpp -lpthread
+$(daemon).o : $(daemon).cpp
+	g++ -c $(daemon).cpp -lpthread
 
-main.o : main.cpp
-	g++ -c main.cpp -lpthread
-	
+$(cli).o : $(cli).cpp
+	g++ -c $(cli).cpp -lpthread
+
 worker.o : worker.cpp
 	g++ -c worker.cpp -lpthread
 
@@ -20,12 +25,13 @@ checker.o: checker.cpp
 	g++ -c checker.cpp 
 
 clean:
-	rm -rf *.o $(naam) $(naam).log
+	rm -rf *.o $(cli) $(daemon) $(cli).log
 
 install: 
-	install $(naam) /usr/local/bin
-	install initscript /etc/rc.d/$(naam)
+	install $(daemon) $(dirInstall)
+	install $(cli) $(dirInstall)
+	install initscript $(dirInit)/$(daemon)
 
 uninstall: 
-	rm /usr/local/bin/$(naam) /etc/rc.d/$(naam) 
+	rm $(dirInstall)/$(cli) $(dirInstall)/$(daemon) $(dirInit)/$(daemon) 
     	
