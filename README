@@ -1,0 +1,19 @@
+FLEXDIR
+=======
+
+Flexdir: a redundant storage pool.
+
+Flexdir runs as a daemon and watches direcories ('flexdirs') for changes (using inotify). 
+
+When a file is added to these 'flexdirs', the daemon will copy it to one or more folders in the storage pool.
+After copying the file, the daemon replaces the file with a symbolic link to one of the files in the storage pool.
+
+When a file is removed from these 'flexdirs', the daemon moves all the copies in the storage-pool to a .deleted folder in the pool-folder.
+
+INSTALLATION
+============
+run: make && make install
+This makefile is for installation on arch-linux. You may need to change the installation-paths for other distro's.
+- a default flexdir.conf file is copied to /etc/flexdir.conf. read this file for more info.
+- to start the daemon run: /etc/rc.d/flexdird start
+- to use the cli run flexdir -h
