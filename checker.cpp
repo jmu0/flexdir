@@ -3,6 +3,7 @@
 #include <iostream>
 #include <sstream> //stringstream
 #include <string>
+#include <unistd.h> //sleep function
 #include <pthread.h>
 #include <time.h> //getNextJob
 

@@ -3,6 +3,7 @@
 #include <iostream>
 #include <sys/inotify.h>
 #include <cstdlib>
+#include <unistd.h>
 #include <string>
 #include <pthread.h>
 #include <vector>

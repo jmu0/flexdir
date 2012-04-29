@@ -2,6 +2,7 @@
 #include <cstdlib>
 #include <string>
 #include <stdio.h>
+#include <unistd.h>
 #include <sys/stat.h>
 #include <pthread.h>
 #include "worker.h"

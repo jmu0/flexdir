@@ -10,6 +10,7 @@
 #include <sys/statvfs.h>//for disk sizes
 #include <dirent.h>//for reading filenames
 #include <cstdlib> //system calls
+#include <unistd.h> //sleep function
 #include <string.h> //strcpy
 #include <algorithm> //sort vectors
 #include <pthread.h> //posix threads
